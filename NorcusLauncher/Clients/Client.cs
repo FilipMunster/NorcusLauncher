@@ -6,25 +6,16 @@ using System.Threading.Tasks;
 
 namespace NorcusLauncher.Clients
 {
-    public class Client
+    public class Client : IClient
     {
-        public string Name { get; set; }
-        public string Url { get; set; }
-        public string DisplayDeviceKey { get; set; }
-        public StartupMode StartMode { get; set; }
-        public enum StartupMode
-        {
-            None = 0,
-            FullScreen = 'F',
-            Kiosk = 'K'
-        }
-
+        public string Name { get; set; } = "";
+        public string AppId { get; set; } = "";
+        public string DisplayDeviceKey { get; set; } = "";
         public Client() { }
-        public Client(string name, string url, StartupMode startupMode, string displayDeviceKey)
+        public Client(string name, string appId, string displayDeviceKey)
         {
             Name = name;
-            Url = url;
-            StartMode = startupMode;
+            AppId = appId;
             DisplayDeviceKey = displayDeviceKey;
         }
         public override string ToString()

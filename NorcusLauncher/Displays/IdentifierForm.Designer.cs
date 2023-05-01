@@ -38,7 +38,7 @@
             DispId.AutoSize = true;
             DispId.Font = new Font("Segoe UI", 72F, FontStyle.Bold, GraphicsUnit.Point);
             DispId.ImageAlign = ContentAlignment.TopLeft;
-            DispId.Location = new Point(192, 52);
+            DispId.Location = new Point(166, 52);
             DispId.Name = "DispId";
             DispId.Size = new Size(428, 159);
             DispId.TabIndex = 0;
@@ -51,7 +51,7 @@
             DispName.AutoSize = true;
             DispName.Font = new Font("Segoe UI", 18F, FontStyle.Regular, GraphicsUnit.Point);
             DispName.ImageAlign = ContentAlignment.TopLeft;
-            DispName.Location = new Point(328, 255);
+            DispName.Location = new Point(302, 255);
             DispName.Name = "DispName";
             DispName.Size = new Size(156, 41);
             DispName.TabIndex = 1;
@@ -62,7 +62,7 @@
             AdditionalText.AutoSize = true;
             AdditionalText.Font = new Font("Segoe UI", 24F, FontStyle.Regular, GraphicsUnit.Point);
             AdditionalText.ImageAlign = ContentAlignment.TopLeft;
-            AdditionalText.Location = new Point(360, 369);
+            AdditionalText.Location = new Point(334, 369);
             AdditionalText.Name = "AdditionalText";
             AdditionalText.Size = new Size(93, 54);
             AdditionalText.TabIndex = 2;
@@ -72,9 +72,9 @@
             // 
             AutoScaleDimensions = new SizeF(8F, 20F);
             AutoScaleMode = AutoScaleMode.Font;
-            BackColor = SystemColors.ActiveCaption;
+            BackColor = SystemColors.Window;
             BackgroundImageLayout = ImageLayout.None;
-            ClientSize = new Size(812, 500);
+            ClientSize = new Size(760, 500);
             Controls.Add(AdditionalText);
             Controls.Add(DispName);
             Controls.Add(DispId);

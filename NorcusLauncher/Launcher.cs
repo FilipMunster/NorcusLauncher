@@ -67,13 +67,27 @@ namespace NorcusLauncher
                 client.Stop();
             }
 
+            List<ClientProcess> noDisplayClients = new List<ClientProcess>();
             Clients.Clear();
             foreach (var client in Config.Clients)
             {
                 ClientProcess cliProc = new ClientProcess(client, Config);
                 cliProc.Display = DisplayHandler.Displays.FirstOrDefault(x => x.DeviceKey == cliProc.DisplayDeviceKey);
                 Clients.Add(cliProc);
+                if (cliProc.Display is null)
+                    noDisplayClients.Add(cliProc);
             }
+
+            if (noDisplayClients.Count > 0)
+            {
+                string msg = "Někteří klienti nemají přiřazený displej:\n";
+                foreach (var client in noDisplayClients)
+                {
+                    msg += $"{client.Name} - {client.DisplayDeviceKey}\n";
+                }
+                MessageBox.Show(msg, "Chybí displej", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+
             AutoRun = AutoRun;
         }
         public void RunClients() => Clients.ForEach(cli => cli.Run());

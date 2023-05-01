@@ -26,14 +26,30 @@ namespace NorcusLauncher
         public static Config Load(string configFilePath)
         {
             if (!System.IO.File.Exists(configFilePath))
-                return null;
+            {
+                if (System.IO.File.Exists(configFilePath + "_temp"))
+                    return Load(configFilePath + "_temp");
+                else
+                    return null;
+            }
 
             System.Xml.Serialization.XmlSerializer serializer = new System.Xml.Serialization.XmlSerializer(typeof(Config));
             System.IO.FileStream file = System.IO.File.OpenRead(configFilePath);
-            object deserialized = serializer.Deserialize(file);
-
+            Config deserialized = null;
+            try { deserialized = serializer.Deserialize(file) as Config; }
+            catch { }
             file.Close();
-            return deserialized as Config;
+
+            if (deserialized is null)
+                return Load(configFilePath + "_temp");
+
+            if (configFilePath.EndsWith("_temp"))
+            {
+                System.IO.File.Copy(configFilePath, configFilePath.Substring(0, configFilePath.Length - 5), true);
+                System.IO.File.Delete(configFilePath);
+            }
+
+            return deserialized;
         }
 
         public static void Save(Config config) => Save(config, GetDefaultConfigFilePath());
@@ -42,10 +58,13 @@ namespace NorcusLauncher
             System.Xml.Serialization.XmlSerializer serializer =
                 new System.Xml.Serialization.XmlSerializer(typeof(Config));
 
-            System.IO.FileStream file = System.IO.File.Create(configFilePath);
+            System.IO.FileStream file = System.IO.File.Create(configFilePath + "_temp");
 
             serializer.Serialize(file, config);
             file.Close();
+
+            System.IO.File.Copy(configFilePath + "_temp", configFilePath, true);
+            System.IO.File.Delete(configFilePath + "_temp");
         }
         public void Save() => Save(GetDefaultConfigFilePath());
         public void Save(string configFilePath) => Save(this, configFilePath);

@@ -8,7 +8,7 @@ using System.Windows.Forms;
 
 namespace NorcusLauncher.Displays
 {
-    public class Display
+    public class Display : IDisplay
     {
         public WindowsDisplayAPI.DisplayAdapter Adapter { get; private set; }
         public WindowsDisplayAPI.DisplayScreen Screen { get; set; }

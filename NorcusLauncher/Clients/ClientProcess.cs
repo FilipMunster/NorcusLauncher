@@ -37,7 +37,7 @@ namespace NorcusLauncher.Clients
         }
         private Config _Config { get; set; }
         public ClientProcess(Client client, Config config)
-            : base(client.Name, client.Url, client.StartMode, client.DisplayDeviceKey) 
+            : base(client.Name, client.AppId, client.DisplayDeviceKey) 
         {
             _Config = config;
         }
@@ -45,25 +45,9 @@ namespace NorcusLauncher.Clients
         {
             if (Display is null || !Display.IsConnected || this.IsRunning) return;
 
-            string startMode;
-            switch (this.StartMode)
-            {
-                case StartupMode.FullScreen:
-                    startMode = "--start-fullscreen ";
-                    break;
-                case StartupMode.Kiosk:
-                    startMode = "--kiosk ";
-                    break;
-                default:
-                case StartupMode.None:
-                    startMode = "";
-                    break;
-            }
-
-            string arguments = startMode +
-                            $"--profile-directory=\"{Name}\" " +
-                            $"--user-data-dir=\"{_Config.ProfilesPath}User Data - {Name}\" " +
-                            $"\"{Url}\"";
+            string arguments = $"--profile-directory=\"{Name}\" " +
+                               $"--user-data-dir=\"{_Config.ProfilesPath}User Data - {Name}\" " +
+                               $"--app-id={AppId}";
 
             Process.StartInfo = new ProcessStartInfo(_Config.ChromePath, arguments);
             _StartProcessOnPosition(Process, Display.ScreenBounds);

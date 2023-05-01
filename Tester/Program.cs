@@ -15,11 +15,11 @@ launcher.StopClients();
 
 Config CreateConfig()
 {
-    //// Vytvoření kofinguračního souboru
+    //// Vytvoření konfiguračního souboru
     Config config = new Config();
     DisplayHandler displayHandler = new DisplayHandler();
-    Client client = new Client("Jmeno", "www.google.com", Client.StartupMode.Kiosk, displayHandler.Displays[0].DeviceKey);
-    Client client2 = new Client("Jmeno2", "www.seznam.cz", Client.StartupMode.Kiosk, displayHandler.Displays[2].DeviceKey);
+    Client client = new Client("Kytara", "unknown", displayHandler.Displays[0].DeviceKey);
+    Client client2 = new Client("Zpevacka", "unknown", displayHandler.Displays[2].DeviceKey);
     config.Clients.Add(client);
     config.Clients.Add(client2);
     config.Save();
