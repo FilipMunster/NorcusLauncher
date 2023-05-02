@@ -9,18 +9,26 @@ namespace NorcusLauncher.Clients
     public class Client : IClient
     {
         public string Name { get; set; } = "";
-        public string AppId { get; set; } = "";
         public string DisplayDeviceKey { get; set; } = "";
+        public Mode StartMode { get; set; }
+        string IClient.StartMode { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
+
         public Client() { }
-        public Client(string name, string appId, string displayDeviceKey)
+        public Client(string name, Mode startMode, string displayDeviceKey)
         {
             Name = name;
-            AppId = appId;
+            StartMode = startMode;
             DisplayDeviceKey = displayDeviceKey;
         }
         public override string ToString()
         {
             return Name;
+        }
+        public enum Mode
+        {
+            None = 'N',
+            FullScreen = 'F',
+            Kiosk = 'K'
         }
     }
 }

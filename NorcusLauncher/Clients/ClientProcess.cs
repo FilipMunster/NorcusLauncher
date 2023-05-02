@@ -19,7 +19,7 @@ namespace NorcusLauncher.Clients
 
         const int SWP_SHOWWINDOW = 0x0040;
         public Process Process { get; private set; } = new Process();
-        public Display Display { get; set; }
+        public Display? Display { get; set; }
         public bool IsRunning => Process.IsRunning();
         public bool CanRun => Display != null && Display.IsConnected;
         private bool __autoRun = false;
@@ -37,33 +37,64 @@ namespace NorcusLauncher.Clients
         }
         private Config _Config { get; set; }
         public ClientProcess(Client client, Config config)
-            : base(client.Name, client.AppId, client.DisplayDeviceKey) 
+            : base(client.Name, client.StartMode, client.DisplayDeviceKey) 
         {
             _Config = config;
         }
         public void Run()
         {
+            if (this.IsRunning && Process.HasExited)
+                Process.Close();
+
             if (Display is null || !Display.IsConnected || this.IsRunning) return;
+            Console.WriteLine("Starting client " + this.Name);
+            string startMode;
+            switch (this.StartMode)
+            {
+                case Mode.FullScreen:
+                    startMode = "--start-fullscreen";
+                    break;
+                case Mode.Kiosk:
+                    startMode = "--kiosk";
+                    break;
+                default:
+                case Mode.None:
+                    startMode = "";
+                    break;
+            }
 
             string arguments = $"--profile-directory=\"{Name}\" " +
                                $"--user-data-dir=\"{_Config.ProfilesPath}User Data - {Name}\" " +
-                               $"--app-id={AppId}";
+                               $"{startMode} \"{_Config.ServerUrl}\"";
 
             Process.StartInfo = new ProcessStartInfo(_Config.ChromePath, arguments);
             _StartProcessOnPosition(Process, Display.ScreenBounds);
+            Console.WriteLine($"Client {this.Name} started with arguments:\n{arguments}");
         }
         public void Stop()
         {
             if (!Process.IsRunning()) return;
-            
-            if (Process.Responding)
-            {
-                Process.CloseMainWindow();
-                Process.WaitForExit(5000);
-            }
 
-            if (Process.IsRunning())
-                Process.Kill();
+            try
+            {
+                Console.WriteLine("Stopping client " + Name);
+                if (!Process.CloseMainWindow())
+                {
+                    Console.WriteLine("CloseMainWindow failed");
+                    Process.Kill(true);
+                    Console.WriteLine("Process killed");
+                }
+                else if (!Process.WaitForExit(_Config.WaitForExit))
+                {
+                    Console.WriteLine("WaitForExit failed");
+                    Process.Kill(true);
+                    Console.WriteLine("Process killed");
+                }
+                else
+                    Console.WriteLine("Process stopped properly");
+            }
+            catch (Exception e) { Console.WriteLine(e); }
+            finally { Process.Close(); }
         }
         public void Restart()
         {
@@ -72,17 +103,17 @@ namespace NorcusLauncher.Clients
         }
         public void IdentifyDisplay(TimeSpan timeout = default)
         {
-            if (!Display.IsConnected)
+            if (Display is null || !Display.IsConnected)
                 return;
             if (timeout == default)
-                timeout = new TimeSpan(0, 0, 5);
+                timeout = new TimeSpan(0, 0, 0, 0, _Config.IdentifierTimeout);
             Display.Identify(timeout, this.Name);
         }
         private void _StartProcessOnPosition(Process process, Rectangle windowPosition)
         {
             process.Start();
             DateTime startTime = DateTime.Now;
-            while (process.MainWindowHandle == IntPtr.Zero && (DateTime.Now - startTime).TotalSeconds <= 10)
+            while (process.MainWindowHandle == IntPtr.Zero && (DateTime.Now - startTime).TotalMilliseconds <= _Config.WaitForWindowHandle)
             {
                 Thread.Sleep(100);
             }

@@ -16,6 +16,10 @@ namespace NorcusLauncher
             = Environment.GetFolderPath(Environment.SpecialFolder.ProgramFilesX86) + @"\Google\Chrome\Application\chrome.exe";
         public string ProfilesPath { get; set; }
             = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData) + @"\Google\Chrome\";
+        public string ServerUrl { get; set; } = "";
+        public int WaitForExit { get; set; } = 2000;
+        public int WaitForWindowHandle { get; set; } = 10000;
+        public int IdentifierTimeout { get; set; } = 5000;
         public List<Client> Clients { get; set; } = new List<Client>();
         public Config() { }
         public static string GetDefaultConfigFilePath() =>
