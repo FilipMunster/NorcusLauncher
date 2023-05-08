@@ -6,15 +6,14 @@ using System.Threading.Tasks;
 
 namespace NorcusLauncher.Clients
 {
-    public class Client : IClient
+    public class ClientInfo : IClient
     {
         public string Name { get; set; } = "";
         public string DisplayDeviceKey { get; set; } = "";
-        public Mode StartMode { get; set; }
-        string IClient.StartMode { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
+        public Mode StartMode { get; set; } = Mode.None;
 
-        public Client() { }
-        public Client(string name, Mode startMode, string displayDeviceKey)
+        public ClientInfo() { }
+        public ClientInfo(string name, Mode startMode, string displayDeviceKey)
         {
             Name = name;
             StartMode = startMode;

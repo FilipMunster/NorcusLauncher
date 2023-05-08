@@ -1,0 +1,201 @@
+﻿<Window x:Class="NorcusClientManager.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:System="clr-namespace:System;assembly=mscorlib"
+        xmlns:local="clr-namespace:NorcusClientManager"
+        mc:Ignorable="d"
+        Title="Norcus Client Manager" Height="420" Width="510">
+    <Window.DataContext>
+        <local:MainViewModel/>
+    </Window.DataContext>
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="95"/>
+            <RowDefinition/>
+            <RowDefinition Height="80"/>
+        </Grid.RowDefinitions>
+        <StackPanel
+            Grid.Row="0"
+            Orientation="Vertical"
+            Margin="5, 0, 5, 0">
+            <StackPanel
+                Orientation="Horizontal">                
+                <TextBlock 
+                    Text="Konfigurace:" 
+                    VerticalAlignment="Center"/>
+                <Button 
+                    Content="Načíst" Margin="5"
+                    Command="{Binding LoadConfigCommand}"/>
+                <Button 
+                    Content="Uložit" Margin="5"
+                    Command="{Binding SaveConfigCommand}"/>
+            </StackPanel>
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="110"/>
+                    <ColumnDefinition/>
+                </Grid.ColumnDefinitions>
+                <Grid.RowDefinitions>
+                    <RowDefinition/>
+                    <RowDefinition/>
+                    <RowDefinition/>
+                </Grid.RowDefinitions>
+            <TextBlock 
+                Grid.Row="0" Grid.Column="0"
+                Text="Cesta k Chromu:"
+                Margin="2"/>
+            <TextBox
+                Grid.Row="0" Grid.Column="1"
+                Margin="2"
+                Text="{Binding ChromePath}"/>
+            <TextBlock 
+                Grid.Row="1" Grid.Column="0"
+                Text="Cesta k profilům:"
+                Margin="2"/>
+            <TextBox
+                Grid.Row="1" Grid.Column="1"
+                Margin="2"
+                Text="{Binding ProfilesPath}"/>
+            <TextBlock 
+                Grid.Row="2" Grid.Column="0"
+                Text="Url serveru:"
+                Margin="2"/>
+            <TextBox
+                Grid.Row="2" Grid.Column="1"
+                Margin="2"
+                Text="{Binding ServerUrl}"/>
+            </Grid>
+        </StackPanel>
+        <Grid
+            Grid.Row="1">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="50"/>
+                <RowDefinition/>
+            </Grid.RowDefinitions>
+            <StackPanel
+                Grid.Row="0" Grid.Column="0"
+                Orientation="Vertical"
+                Margin="5, 0, 5, 5">
+                <TextBlock 
+                    Height="17"
+                    Text="Klienti:"/>
+                <StackPanel 
+                    Orientation="Horizontal">
+                    <Button 
+                        Content="Přidat" Margin="5"
+                        Command="{Binding AddClientCommand}"/>
+                    <Button 
+                        Content="Odstranit" Margin="5, 5, 20, 5"
+                        Command="{Binding RemoveClientCommand}"/>
+                    <Button 
+                        Content="Spustit" Margin="5"
+                        Command="{Binding RunClientsCommand}"/>
+                    <Button 
+                        Content="Restartovat" Margin="5"
+                        Command="{Binding RestartClientsCommand}"/>
+                    <Button 
+                        Content="Zastavit" Margin="5"
+                        Command="{Binding StopClientsCommand}"/>
+                    <Button 
+                        Content="Identifikovat" Margin="5"
+                        Command="{Binding IdentifyClientsCommand}"/>
+                </StackPanel>
+            </StackPanel>
+            <DataGrid
+                Grid.Row="1"
+                Margin="5"
+                ItemsSource="{Binding ClientViews}"
+                SelectedItem="{Binding SelectedClient}"
+                CanUserAddRows="True"
+                CanUserDeleteRows="True"
+                AutoGenerateColumns="False"
+                Name="clientsDataGrid">
+                <DataGrid.Columns>
+                    <DataGridTextColumn
+                        Header="Název"
+                        Width="100"
+                        Binding="{Binding Name}"/>
+                    <DataGridComboBoxColumn
+                        Header="Start mode"
+                        Width="75"
+                        x:Name="modeComboBox"
+                        SelectedItemBinding="{Binding StartMode}"/>
+                    <DataGridComboBoxColumn
+                        Header="Displej"
+                        Width="300"
+                        SelectedValueBinding="{Binding Display}"
+                        x:Name="displaysComboBox">
+                        <DataGridComboBoxColumn.ElementStyle>
+                            <Style TargetType="ComboBox">
+                                <Setter Property="ItemsSource" Value="{Binding DataContext.DisplayList, RelativeSource={RelativeSource AncestorType={x:Type DataGrid}}}" />
+                            </Style>
+                        </DataGridComboBoxColumn.ElementStyle>
+                        <DataGridComboBoxColumn.EditingElementStyle>
+                            <Style TargetType="ComboBox">
+                                <Setter Property="ItemsSource" Value="{Binding DataContext.DisplayList, RelativeSource={RelativeSource AncestorType={x:Type DataGrid}}}" />
+                            </Style>
+                        </DataGridComboBoxColumn.EditingElementStyle>
+                    </DataGridComboBoxColumn>
+                </DataGrid.Columns>
+            </DataGrid>
+        </Grid>
+        <Grid Grid.Row="2">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition/>
+                <ColumnDefinition/>
+            </Grid.ColumnDefinitions>
+            <StackPanel 
+                Grid.Column="0"
+                Orientation="Vertical"
+                Margin="5">
+                <TextBlock Text="Další nastavení:"/>
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition/>
+                        <RowDefinition/>
+                    </Grid.RowDefinitions>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition/>
+                        <ColumnDefinition Width="50"/>
+                        <ColumnDefinition Width="30"/>
+                    </Grid.ColumnDefinitions>
+                    <TextBlock 
+                        Grid.Row="0" Grid.Column="0"
+                        Text="Timeout pro spuštění procesu (ms):"
+                        Margin="2"/>
+                    <TextBox
+                        Grid.Row="0" Grid.Column="1"
+                        Margin="2"
+                        Text="{Binding WindowHandleTimeout}"/>
+                    <TextBlock 
+                        Grid.Row="1" Grid.Column="0"
+                        Text="Timeout pro ukončení procesu (ms):"
+                        Margin="2"/>
+                    <TextBox
+                        Grid.Row="1" Grid.Column="1"
+                        Margin="2"
+                        Text="{Binding ProcessExitTimeout}"/>
+                </Grid>
+            </StackPanel>
+            <StackPanel 
+                Grid.Column="1"
+                Orientation="Vertical">
+                <TextBlock Text="Spouštění:"/>
+                <CheckBox
+                    Margin="5, 5, 0, 0"
+                    Content="Spustit po spuštění Windows"
+                    IsChecked="{Binding RunOnStartup}"/>
+                <CheckBox
+                    Margin="5, 2, 0, 0"
+                    Content="Minmalizovat do tray"
+                    IsChecked="{Binding StartInTray}"/>
+                <CheckBox
+                    Margin="5, 2, 0, 0"
+                    Content="Spustit klienty po startu"
+                    IsChecked="{Binding AutoLaunch}"/>
+            </StackPanel>
+        </Grid>
+    </Grid>
+</Window>

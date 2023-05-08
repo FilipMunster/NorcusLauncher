@@ -2,6 +2,7 @@
 using NorcusLauncher.Displays;
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.Linq;
 using System.Runtime.InteropServices;
@@ -16,31 +17,16 @@ namespace NorcusLauncher
     {
         public List<ClientProcess> Clients { get; private set; } = new List<ClientProcess>();
         public DisplayHandler DisplayHandler { get; private set; } = new DisplayHandler();
-        public Config Config { get; private set; }
-        private bool __autoRun;
-
-        /// <summary>
-        /// Pro všechny klienty nastaví, zda se budou automaticky spouštět po připojení displeje.
-        /// </summary>
-        public bool AutoRun
-        {
-            get => __autoRun;
-            set 
-            { 
-                __autoRun = value;
-                Clients.ForEach(client => client.AutoRun = value);
-            }
-        }
+        public IConfig Config { get; private set; }
 
         /// <summary>
         /// Stará se o vytvoření klientů a jejich přiřazení k displejům. Umožňuje hromadné akce nad klienty (Run, Restart, Stop).
         /// </summary>
         /// <param name="config"></param>
-        public Launcher(Config config, bool autoRun = false)
+        public Launcher(Config config)
         {
             Config = config;
             RefreshClients();
-            AutoRun = autoRun;
             DisplayHandler.DisplayChanged += DisplayHandler_DisplayChanged;
         }
 
@@ -48,7 +34,7 @@ namespace NorcusLauncher
         {
             foreach (var disp in e.AddedDisplays)
             {
-                Clients.ForEach(x => { if (x.Display == disp && x.AutoRun) x.Run(); });
+                Clients.ForEach(x => { if (x.Display == disp) x.Run(); });
             }
 
             foreach (var disp in e.RemovedDisplays)
@@ -58,21 +44,19 @@ namespace NorcusLauncher
         }
 
         /// <summary>
-        /// Zastaví všechny klienty a načte aktuální konfiguraci. Vytvoří nový List <see cref="Clients"/> a přiřadí ke klientům jejich displeje.
+        /// Zastaví všechny klienty a načte aktuální konfiguraci. Znovu naplní List <see cref="Clients"/> a přiřadí ke klientům jejich displeje.
         /// </summary>
         public void RefreshClients()
         {
-            foreach (var client in Clients)
-            {
-                client.Stop();
-            }
+            bool allRunning = Clients.Count > 0 && Clients.All(x => x.IsRunning);
+            StopClients();
 
             List<ClientProcess> noDisplayClients = new List<ClientProcess>();
             Clients.Clear();
-            foreach (var client in Config.Clients)
+            foreach (var client in Config.ClientInfos)
             {
                 ClientProcess cliProc = new ClientProcess(client, Config);
-                cliProc.Display = DisplayHandler.Displays.FirstOrDefault(x => x.DeviceKey == cliProc.DisplayDeviceKey);
+                cliProc.Display = DisplayHandler.Displays.FirstOrDefault(x => x.DeviceKey == cliProc.ClientInfo.DisplayDeviceKey);
                 Clients.Add(cliProc);
                 if (cliProc.Display is null)
                     noDisplayClients.Add(cliProc);
@@ -83,12 +67,12 @@ namespace NorcusLauncher
                 string msg = "Někteří klienti nemají přiřazený displej:\n";
                 foreach (var client in noDisplayClients)
                 {
-                    msg += $"{client.Name} - {client.DisplayDeviceKey}\n";
+                    msg += $"{client.ClientInfo.Name} - {client.ClientInfo.DisplayDeviceKey}\n";
                 }
                 MessageBox.Show(msg, "Chybí displej", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
 
-            AutoRun = AutoRun;
+            if (allRunning) RunClients();
         }
         public void RunClients() => Clients.ForEach(cli => cli.Run());
         public void RestartClients() => Clients.ForEach(cli => cli.Restart());

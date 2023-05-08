@@ -12,64 +12,49 @@ using System.Windows.Forms;
 
 namespace NorcusLauncher.Clients
 {
-    public class ClientProcess : Client
+    public class ClientProcess
     {
         [DllImport("user32.dll", EntryPoint = "SetWindowPos")]
         private static extern IntPtr SetWindowPos(IntPtr hWnd, int hWndInsertAfter, int x, int Y, int cx, int cy, int wFlags);
 
         const int SWP_SHOWWINDOW = 0x0040;
+        public ClientInfo ClientInfo { get; set; }
         public Process Process { get; private set; } = new Process();
         public Display? Display { get; set; }
         public bool IsRunning => Process.IsRunning();
         public bool CanRun => Display != null && Display.IsConnected;
-        private bool __autoRun = false;
-        /// <summary>
-        /// Určuje, zda při připojení obrazovky bude klient automaticky spuštěn
-        /// </summary>
-        public bool AutoRun
+        private IConfig _Config { get; set; }
+        public ClientProcess(ClientInfo clientInfo, IConfig config)
         {
-            get => __autoRun;
-            set
-            {
-                __autoRun = value;
-                if (value) Run();
-            }
-        }
-        private Config _Config { get; set; }
-        public ClientProcess(Client client, Config config)
-            : base(client.Name, client.StartMode, client.DisplayDeviceKey) 
-        {
+            ClientInfo = clientInfo;
             _Config = config;
         }
         public void Run()
         {
-            if (this.IsRunning && Process.HasExited)
-                Process.Close();
-
             if (Display is null || !Display.IsConnected || this.IsRunning) return;
-            Console.WriteLine("Starting client " + this.Name);
+            Console.WriteLine("Starting client " + ClientInfo.Name);
             string startMode;
-            switch (this.StartMode)
+            switch (ClientInfo.StartMode)
             {
-                case Mode.FullScreen:
+                case ClientInfo.Mode.FullScreen:
                     startMode = "--start-fullscreen";
                     break;
-                case Mode.Kiosk:
+                case ClientInfo.Mode.Kiosk:
                     startMode = "--kiosk";
                     break;
                 default:
-                case Mode.None:
+                case ClientInfo.Mode.None:
                     startMode = "";
                     break;
             }
 
-            string arguments = $"--profile-directory=\"{Name}\" " +
-                               $"--user-data-dir=\"{_Config.ProfilesPath}User Data - {Name}\" " +
+            string arguments = $"--profile-directory=\"{ClientInfo.Name}\" " +
+                               $"--user-data-dir=\"{_Config.ProfilesPath}User Data - {ClientInfo.Name}\" " +
                                $"{startMode} \"{_Config.ServerUrl}\"";
 
             Process.StartInfo = new ProcessStartInfo(_Config.ChromePath, arguments);
             _StartProcessOnPosition(Process, Display.ScreenBounds);
-            Console.WriteLine($"Client {this.Name} started with arguments:\n{arguments}");
+            Console.WriteLine($"Client {ClientInfo.Name} started with arguments:\n{arguments}");
         }
         public void Stop()
         {
@@ -77,14 +62,14 @@ namespace NorcusLauncher.Clients
 
             try
             {
-                Console.WriteLine("Stopping client " + Name);
+                Console.WriteLine("Stopping client " + ClientInfo.Name);
                 if (!Process.CloseMainWindow())
                 {
                     Console.WriteLine("CloseMainWindow failed");
                     Process.Kill(true);
                     Console.WriteLine("Process killed");
                 }
-                else if (!Process.WaitForExit(_Config.WaitForExit))
+                else if (!Process.WaitForExit(_Config.ProcessExitTimeout))
                 {
                     Console.WriteLine("WaitForExit failed");
                     Process.Kill(true);
@@ -99,6 +84,8 @@ namespace NorcusLauncher.Clients
         public void Restart()
         {
             Stop();
+            if (Process.IsRunning() && Process.HasExited)
+                Process.Close();
             Run();
         }
         public void IdentifyDisplay(TimeSpan timeout = default)
@@ -107,13 +94,13 @@ namespace NorcusLauncher.Clients
                 return;
             if (timeout == default)
                 timeout = new TimeSpan(0, 0, 0, 0, _Config.IdentifierTimeout);
-            Display.Identify(timeout, this.Name);
+            Display.Identify(timeout, ClientInfo.Name);
         }
         private void _StartProcessOnPosition(Process process, Rectangle windowPosition)
         {
             process.Start();
             DateTime startTime = DateTime.Now;
-            while (process.MainWindowHandle == IntPtr.Zero && (DateTime.Now - startTime).TotalMilliseconds <= _Config.WaitForWindowHandle)
+            while (process.MainWindowHandle == IntPtr.Zero && (DateTime.Now - startTime).TotalMilliseconds <= _Config.WindowHandleTimeout)
             {
                 Thread.Sleep(100);
             }
