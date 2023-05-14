@@ -31,6 +31,7 @@
             DispId = new Label();
             DispName = new Label();
             AdditionalText = new Label();
+            Footer = new Label();
             SuspendLayout();
             // 
             // DispId
@@ -68,6 +69,16 @@
             AdditionalText.TabIndex = 2;
             AdditionalText.Text = "Text";
             // 
+            // Footer
+            // 
+            Footer.AutoSize = true;
+            Footer.Font = new Font("Segoe UI", 12F, FontStyle.Regular, GraphicsUnit.Point);
+            Footer.Location = new Point(12, 463);
+            Footer.Name = "Footer";
+            Footer.Size = new Size(70, 28);
+            Footer.TabIndex = 3;
+            Footer.Text = "Footer";
+            // 
             // IdentifierForm
             // 
             AutoScaleDimensions = new SizeF(8F, 20F);
@@ -75,6 +86,7 @@
             BackColor = SystemColors.Window;
             BackgroundImageLayout = ImageLayout.None;
             ClientSize = new Size(760, 500);
+            Controls.Add(Footer);
             Controls.Add(AdditionalText);
             Controls.Add(DispName);
             Controls.Add(DispId);
@@ -93,5 +105,6 @@
         private Label DispId;
         private Label DispName;
         private Label AdditionalText;
+        private Label Footer;
     }
 }

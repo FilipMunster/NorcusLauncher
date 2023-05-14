@@ -18,6 +18,7 @@ namespace NorcusLauncher
         public List<ClientProcess> Clients { get; private set; } = new List<ClientProcess>();
         public DisplayHandler DisplayHandler { get; private set; } = new DisplayHandler();
         public IConfig Config { get; private set; }
+        public bool ClientsAreRunning { get; private set; } = false;
 
         /// <summary>
         /// Stará se o vytvoření klientů a jejich přiřazení k displejům. Umožňuje hromadné akce nad klienty (Run, Restart, Stop).
@@ -26,20 +27,24 @@ namespace NorcusLauncher
         public Launcher(Config config)
         {
             Config = config;
+            _AddBlankDisplaysToHandler();
             RefreshClients();
             DisplayHandler.DisplayChanged += DisplayHandler_DisplayChanged;
         }
 
         private void DisplayHandler_DisplayChanged(object sender, DisplayHandler.DisplayChangeEventArgs e)
         {
+            foreach (var disp in e.UpdatedDisplays)
+            {
+                Clients.ForEach(cli => { if (cli.Display == disp) cli.UpdateWindowPosition(); });
+            }
             foreach (var disp in e.AddedDisplays)
             {
-                Clients.ForEach(x => { if (x.Display == disp) x.Run(); });
+                Clients.ForEach(cli => { if (cli.Display == disp && ClientsAreRunning) cli.Run(); });
             }
-
             foreach (var disp in e.RemovedDisplays)
             {
-                Clients.ForEach(x => { if (x.Display == disp) x.Stop(); });
+                Clients.ForEach(cli => { if (cli.Display == disp) cli.Stop(); });
             }
         }
 
@@ -48,35 +53,38 @@ namespace NorcusLauncher
         /// </summary>
         public void RefreshClients()
         {
-            bool allRunning = Clients.Count > 0 && Clients.All(x => x.IsRunning);
-            StopClients();
+            Clients.ForEach(cli => cli.Stop());
 
-            List<ClientProcess> noDisplayClients = new List<ClientProcess>();
             Clients.Clear();
             foreach (var client in Config.ClientInfos)
             {
-                ClientProcess cliProc = new ClientProcess(client, Config);
-                cliProc.Display = DisplayHandler.Displays.FirstOrDefault(x => x.DeviceKey == cliProc.ClientInfo.DisplayDeviceKey);
+                ClientProcess cliProc = new ClientProcess(client, Config); 
+                cliProc.Display = DisplayHandler.Displays.FirstOrDefault(x => x.DisplayID == cliProc.ClientInfo.DisplayID)
+                    ?? new Display(cliProc.ClientInfo.DisplayID);
                 Clients.Add(cliProc);
-                if (cliProc.Display is null)
-                    noDisplayClients.Add(cliProc);
             }
 
-            if (noDisplayClients.Count > 0)
-            {
-                string msg = "Někteří klienti nemají přiřazený displej:\n";
-                foreach (var client in noDisplayClients)
-                {
-                    msg += $"{client.ClientInfo.Name} - {client.ClientInfo.DisplayDeviceKey}\n";
-                }
-                MessageBox.Show(msg, "Chybí displej", MessageBoxButtons.OK, MessageBoxIcon.Error);
-            }
-
-            if (allRunning) RunClients();
+            if (ClientsAreRunning) RunClients();
         }
-        public void RunClients() => Clients.ForEach(cli => cli.Run());
+        public void RunClients() { ClientsAreRunning = true; Clients.ForEach(cli => cli.Run()); }
         public void RestartClients() => Clients.ForEach(cli => cli.Restart());
-        public void StopClients() => Clients.ForEach(cli => cli.Stop());
+        public void StopClients() { ClientsAreRunning = false; Clients.ForEach(cli => cli.Stop()); }
         public void IdentifyDisplays() => Clients.ForEach(cli => cli.IdentifyDisplay());
+
+        /// <summary>
+        /// Přidá do kolekce displejů v Handleru displeje načtené z Configu. Zamezí duplicitním displejům.
+        /// </summary>
+        /// <param name="displayID"></param>
+        private void _AddBlankDisplaysToHandler()
+        {
+            var currentIds = DisplayHandler.Displays.Select(d => d.DisplayID).ToList();
+            var configIds = Config.ClientInfos.Select(x => x.DisplayID);
+            
+            foreach (var id in configIds)
+            {
+                if (!currentIds.Contains(id))
+                    DisplayHandler.Displays.Add(new Display(id));
+            }
+        }
     }
 }

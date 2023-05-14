@@ -12,8 +12,8 @@ NorcusLauncher.Config CreateConfig()
     NorcusLauncher.Config config = new NorcusLauncher.Config();
     config.ServerUrl = "https://norcus.local:59825";
     DisplayHandler displayHandler = new DisplayHandler();
-    ClientInfo client = new ClientInfo("Kytara", ClientInfo.Mode.None, displayHandler.Displays[0].DeviceKey);
-    ClientInfo client2 = new ClientInfo("Zpevacka", ClientInfo.Mode.None, displayHandler.Displays[2].DeviceKey);
+    ClientInfo client = new ClientInfo("Kytara", ClientInfo.Mode.None, displayHandler.Displays[0].DisplayID);
+    ClientInfo client2 = new ClientInfo("Zpevacka", ClientInfo.Mode.None, displayHandler.Displays[2].DisplayID);
     config.ClientInfos.Add(client);
     config.ClientInfos.Add(client2);
     return config;

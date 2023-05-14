@@ -9,15 +9,15 @@ namespace NorcusLauncher.Clients
     public class ClientInfo : IClient
     {
         public string Name { get; set; } = "";
-        public string DisplayDeviceKey { get; set; } = "";
+        public string DisplayID { get; set; } = "";
         public Mode StartMode { get; set; } = Mode.None;
 
         public ClientInfo() { }
-        public ClientInfo(string name, Mode startMode, string displayDeviceKey)
+        public ClientInfo(string name, Mode startMode, string displayID)
         {
             Name = name;
             StartMode = startMode;
-            DisplayDeviceKey = displayDeviceKey;
+            DisplayID = displayID;
         }
         public override string ToString()
         {

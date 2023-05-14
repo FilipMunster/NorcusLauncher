@@ -4,6 +4,6 @@
              xmlns:local="clr-namespace:NorcusClientManager"
              StartupUri="MainWindow.xaml">
     <Application.Resources>
-         
+        <ResourceDictionary Source="NotifyIconDictionary.xaml" />
     </Application.Resources>
 </Application>

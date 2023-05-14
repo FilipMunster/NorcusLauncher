@@ -10,68 +10,70 @@ namespace NorcusLauncher.Displays
 {
     public class DisplayHandler
     {
-        public List<Display> Displays { get; }
-        private DisplayChangeWatcher _Watcher { get; set; }
+        public List<Display> Displays { get; } = new();
+        private DisplayChangeWatcher _Watcher { get; } = new();
         public DisplayHandler()
         {
-            Displays = new List<Display>();
-            _InitDisplays();
             Refresh();
-            _Watcher = new DisplayChangeWatcher();
-            _Watcher.DisplayChanged += _Watcher_DisplayChanged;
+            _Watcher.DisplayChanged += (_, _) => Refresh();
             Task.Run(() => { Application.Run(_Watcher); });
-        }
-
-        private void _Watcher_DisplayChanged(object sender, EventArgs e)
-        {
-            Refresh();
-        }
-
-        private void _InitDisplays()
-        {
-            var allAdapters = WindowsDisplayAPI.DisplayAdapter.GetDisplayAdapters(true);
-            int i = 1;
-            foreach (var adapter in allAdapters)
-            {
-                Displays.Add(new Display(i++, adapter, null));
-            }
         }
         public void Refresh()
         {
             var activeDisplays = WindowsDisplayAPI.Display.GetDisplays();
+            
+            List<Display> addedDisplays = new();
+            List<Display> removedDisplays = new();
+            List<Display> updatedDisplays = new();
 
-            List<Display> addedDisplays = new List<Display>();
-            List<Display> removedDisplays = new List<Display>();
+            List<Display> unHandledDisplays = new(Displays);
 
-            foreach (var display in Displays)
+            foreach (var activeDisp in activeDisplays)
             {
-                var screen = activeDisplays
-                    .FirstOrDefault(x => x.Adapter.DeviceKey == display.DeviceKey)?
-                    .DisplayScreen;
+                string displayId = Display.GetDisplayId(activeDisp);
+                Display? currentDisplay = Displays.FirstOrDefault(d => d.DisplayID == displayId);
 
-                if (display.IsConnected && screen is null)
-                    removedDisplays.Add(display);
-                else if (!display.IsConnected && screen != null)
-                    addedDisplays.Add(display);
+                if (currentDisplay is null)
+                {
+                    Display addedDisplay = new Display(activeDisp);
+                    Displays.Add(addedDisplay);
+                    addedDisplays.Add(addedDisplay);
+                }
+                else
+                {
+                    if (!currentDisplay.IsConnected)
+                        addedDisplays.Add(currentDisplay);
+                    else if (currentDisplay.WorkingArea != activeDisp.DisplayScreen.WorkingArea)
+                        updatedDisplays.Add(currentDisplay);
 
-                display.Screen = screen;
+                    currentDisplay.DisplayConnected(activeDisp);
+                    unHandledDisplays.Remove(currentDisplay);
+                }
+            }
+            unHandledDisplays.ForEach(d => { d.DisplayDisconnected(); removedDisplays.Add(d); });
+
+            for (int i = 0; i < Displays.Count; i++)
+            {
+                Displays[i].Index = i + 1;
             }
 
-            if (addedDisplays.Count > 0 || removedDisplays.Count > 0)
-                DisplayChanged?.Invoke(this, new DisplayChangeEventArgs(addedDisplays, removedDisplays));
-        }
+            if (addedDisplays.Count > 0 || removedDisplays.Count > 0 || updatedDisplays.Count > 0)
+                DisplayChanged?.Invoke(this, new DisplayChangeEventArgs(addedDisplays, removedDisplays, updatedDisplays));
+        }      
 
         public delegate void DisplayChangeEventHandler(object sender, DisplayChangeEventArgs e);
         public class DisplayChangeEventArgs
         {
             public IEnumerable<Display> AddedDisplays { get; }
             public IEnumerable<Display> RemovedDisplays { get; }
-            public DisplayChangeEventArgs(IEnumerable<Display> addedDisplays, IEnumerable<Display> removedDisplays)
+            public IEnumerable<Display> UpdatedDisplays { get; }
+            public DisplayChangeEventArgs(IEnumerable<Display> addedDisplays, IEnumerable<Display> removedDisplays, IEnumerable<Display> updatedDisplays)
             {
                 AddedDisplays = addedDisplays;
                 RemovedDisplays = removedDisplays;
+                UpdatedDisplays = updatedDisplays;
             }
         }
-        public event DisplayChangeEventHandler DisplayChanged;
+        public event DisplayChangeEventHandler? DisplayChanged;
     }
 }

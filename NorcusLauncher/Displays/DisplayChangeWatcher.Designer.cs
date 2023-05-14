@@ -22,7 +22,7 @@ namespace NorcusLauncher.Displays
             }
             base.Dispose(disposing);
         }
-        
+
         #region Windows Form Designer generated code
 
         /// <summary>
@@ -31,17 +31,19 @@ namespace NorcusLauncher.Displays
         /// </summary>
         private void InitializeComponent()
         {
-            this.SuspendLayout();
+            SuspendLayout();
             // 
-            // WndProcWatcher
+            // DisplayChangeWatcher
             // 
-            this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
-            this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(281, 92);
-            this.Name = "WndProcWatcher";
-            this.Text = "WndProcWatcher";
-            this.ResumeLayout(false);
-
+            AutoScaleDimensions = new SizeF(8F, 20F);
+            AutoScaleMode = AutoScaleMode.Font;
+            ClientSize = new Size(10, 10);
+            FormBorderStyle = FormBorderStyle.None;
+            Margin = new Padding(3, 4, 3, 4);
+            Name = "DisplayChangeWatcher";
+            Opacity = 0D;
+            Text = "WndProcWatcher";
+            ResumeLayout(false);
         }
 
         #endregion

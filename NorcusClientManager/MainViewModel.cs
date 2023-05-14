@@ -1,4 +1,6 @@
-﻿using NorcusLauncher;
+﻿using Hardcodet.Wpf.TaskbarNotification;
+using Microsoft.Win32;
+using NorcusLauncher;
 using NorcusLauncher.Clients;
 using NorcusLauncher.Displays;
 using System;
@@ -10,6 +12,7 @@ using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows;
 using System.Windows.Input;
 
 namespace NorcusClientManager
@@ -27,15 +30,25 @@ namespace NorcusClientManager
         private ICommand _addClientCommand;
         public ICommand AddClientCommand => _addClientCommand ??= new RelayCommand<object>((o) => _AddClient());
         private ICommand _removeClientCommand;
-        public ICommand RemoveClientCommand => _removeClientCommand ??= new RelayCommand<object>((o) => _RemoveClient(SelectedClient));
+        public ICommand RemoveClientCommand => _removeClientCommand ??= new RelayCommand<object>(
+            (o) => _RemoveClient(SelectedClient),
+            (o) => SelectedClient is not null);
         private ICommand _runClientsCommand;
-        public ICommand RunClientsCommand => _runClientsCommand ??= new RelayCommand<object>((o) => _RunClients());
+        public ICommand RunClientsCommand => _runClientsCommand ??= new RelayCommand<object>(
+            (o) => _RunClients(),
+            (o) => ClientViews.Count > 0 && !_Launcher.ClientsAreRunning);
         private ICommand _stopClientsCommand;
-        public ICommand StopClientsCommand => _stopClientsCommand ??= new RelayCommand<object>((o) => _StopClients());
+        public ICommand StopClientsCommand => _stopClientsCommand ??= new RelayCommand<object>(
+            (o) => _StopClients(),
+            (o) => ClientViews.Count > 0 && _Launcher.ClientsAreRunning);
         private ICommand _restartClientsCommand;
-        public ICommand RestartClientsCommand => _restartClientsCommand ??= new RelayCommand<object>((o) => _RestartClients());
+        public ICommand RestartClientsCommand => _restartClientsCommand ??= new RelayCommand<object>(
+            (o) => _RestartClients(),
+            (o) => ClientViews.Count > 0);
         private ICommand _identifyClientsCommand;
-        public ICommand IdentifyClientsCommand => _identifyClientsCommand ??= new RelayCommand<object>((o) => _IdentifyClients());
+        public ICommand IdentifyClientsCommand => _identifyClientsCommand ??= new RelayCommand<object>(
+            (o) => _IdentifyClients(),
+            (o) => ClientViews.Count > 0);
         #endregion
         #region Properties
         public string ChromePath
@@ -78,8 +91,13 @@ namespace NorcusClientManager
             get => _Config.AutoLaunch;
             set => _Config.AutoLaunch = value;
         }
+        public bool AutoIdentify
+        {
+            get => _Config.AutoIdentify;
+            set => _Config.AutoIdentify = value;
+        }
         public ObservableCollection<Display> DisplayList =>
-            _Launcher.DisplayHandler?.Displays?.ToObservableCollection() ?? new ObservableCollection<Display>();
+            _Launcher.DisplayHandler.Displays.ToObservableCollection() ?? new ObservableCollection<Display>();
         public ObservableCollection<ClientView> ClientViews { get; } = new();
         public ClientView SelectedClient { get; set; }
         #endregion
@@ -90,6 +108,7 @@ namespace NorcusClientManager
         public MainViewModel()
         {
             _LoadConfig();
+            _DoStartupEvents();
         }
 
         private void _LoadConfig()
@@ -100,11 +119,16 @@ namespace NorcusClientManager
             _Launcher.DisplayHandler.DisplayChanged += DisplayHandler_DisplayChanged;
             _GenerateClientViews();
         }
+        private void _DoStartupEvents()
+        {
+            if (AutoIdentify) _Launcher?.IdentifyDisplays();
+            if (AutoLaunch) _Launcher?.RunClients();
+        }
 
         private void _SaveConfig()
         {
-            _Config.Save();
-            _Launcher.RefreshClients();
+            _Config?.Save();
+            _Launcher?.RefreshClients();
         }
         private void _AddClient()
         {

@@ -5,6 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Controls;
+using System.Windows.Input;
 using NorcusLauncher;
 using NorcusLauncher.Clients;
 using NorcusLauncher.Displays;
@@ -33,9 +34,19 @@ namespace NorcusClientManager
             set
             {
                 _display = value;
-                ClientProcess.ClientInfo.DisplayDeviceKey = value.DeviceKey;
+                ClientProcess.ClientInfo.DisplayID = value.DisplayID;
             }
         }
+        private ICommand _runCommand;
+        public ICommand RunCommand => _runCommand ??= new RelayCommand<object>(
+            (o) => ClientProcess.Run(),
+            (o) => !ClientProcess.IsRunning);
+        private ICommand _stopCommand;
+        public ICommand StopCommand => _stopCommand ??= new RelayCommand<object>(
+            (o) => ClientProcess.Stop(),
+            (o) => ClientProcess.IsRunning);
+        private ICommand _restartCommand;
+        public ICommand RestartCommand => _restartCommand ??= new RelayCommand<object>((o) => ClientProcess.Restart());
         public ClientView(ClientProcess clientProcess, Launcher launcher)
         {
             ClientProcess = clientProcess;

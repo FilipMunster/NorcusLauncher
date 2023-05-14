@@ -1,4 +1,5 @@
-﻿using NorcusLauncher;
+﻿using Microsoft.Win32;
+using NorcusLauncher;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -19,6 +20,7 @@ namespace NorcusClientManager
         public bool RunOnStartup { get; set; }
         public bool StartInTray { get; set; }
         public bool AutoLaunch { get; set; }
+        public bool AutoIdentify { get; set; }
 
         public static string GetDefaultConfigFilePath() =>
             Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location) + "\\" +
@@ -53,6 +55,8 @@ namespace NorcusClientManager
         public void Save() => Save(GetDefaultConfigFilePath());
         public void Save(string configFilePath)
         {
+            _SaveRegistry();
+
             System.Xml.Serialization.XmlSerializer serializer =
                 new System.Xml.Serialization.XmlSerializer(typeof(Config));
 
@@ -62,6 +66,16 @@ namespace NorcusClientManager
             file.Close();
 
             System.IO.File.Move(configFilePath + "_temp", configFilePath, true);
+        }
+
+        private void _SaveRegistry()
+        {
+            RegistryKey key = Registry.CurrentUser.OpenSubKey("SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Run", true);
+            if (RunOnStartup)
+                key?.SetValue("NorcusClientManager", 
+                    "\"" + System.Reflection.Assembly.GetExecutingAssembly().Location.Replace(".dll", ".exe") + "\"");
+            else
+                key?.DeleteValue("NorcusClientManager", false);
         }
 
     }

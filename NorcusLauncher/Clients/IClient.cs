@@ -4,6 +4,6 @@
     {
         string Name { get; set; }
         ClientInfo.Mode StartMode { get; set; }
-        string DisplayDeviceKey { get; set; }
+        string DisplayID { get; set; }
     }
 }

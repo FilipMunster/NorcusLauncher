@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Hardcodet.Wpf.TaskbarNotification;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -20,11 +21,17 @@ namespace NorcusClientManager
     /// </summary>
     public partial class MainWindow : Window
     {
+        private TaskbarIcon _tbi;
+        private ICommand _tbiDblCLickCommand;
+        private ICommand _TbiDblClickCommand => _tbiDblCLickCommand ??= new RelayCommand<object>((o) => _ShowHideWindow());
         public MainWindow()
         {
             InitializeComponent();
+            _tbi = (TaskbarIcon)FindResource("NCMNotifyIcon");
+            _tbi.DoubleClickCommand = _TbiDblClickCommand;
             modeComboBox.ItemsSource = Enum.GetValues(typeof(NorcusLauncher.Clients.ClientInfo.Mode)).Cast<NorcusLauncher.Clients.ClientInfo.Mode>();
             ((MainViewModel)DataContext).DataGridChanged += MainWindow_DataGridChanged;
+            if (((MainViewModel)DataContext).StartInTray) NCMWindow.Visibility = Visibility.Hidden;
         }
 
         private void MainWindow_DataGridChanged(object? sender, EventArgs e)
@@ -35,6 +42,10 @@ namespace NorcusClientManager
                 clientsDataGrid.CommitEdit();
                 clientsDataGrid.Items.Refresh();
             });
+        }
+        private void _ShowHideWindow()
+        {
+            NCMWindow.Visibility = NCMWindow.Visibility == Visibility.Visible ? Visibility.Hidden : Visibility.Visible;
         }
     }
 }
