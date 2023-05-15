@@ -40,7 +40,7 @@ namespace NorcusClientManager
         private ICommand _runCommand;
         public ICommand RunCommand => _runCommand ??= new RelayCommand<object>(
             (o) => ClientProcess.Run(),
-            (o) => !ClientProcess.IsRunning);
+            (o) => !ClientProcess.IsRunning && (ClientProcess.Display?.IsConnected == true));
         private ICommand _stopCommand;
         public ICommand StopCommand => _stopCommand ??= new RelayCommand<object>(
             (o) => ClientProcess.Stop(),

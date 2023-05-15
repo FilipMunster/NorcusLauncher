@@ -68,13 +68,18 @@ namespace NorcusClientManager
         }
         public int WindowHandleTimeout
         {
-            get => _Config.LauncherConfig.WindowHandleTimeout;
-            set => _Config.LauncherConfig.WindowHandleTimeout = value;
+            get => _Config.LauncherConfig.WindowHandleTimeout / 1000;
+            set => _Config.LauncherConfig.WindowHandleTimeout = value * 1000;
         }
         public int ProcessExitTimeout
         {
-            get => _Config.LauncherConfig.ProcessExitTimeout;
-            set => _Config.LauncherConfig.ProcessExitTimeout = value;
+            get => _Config.LauncherConfig.ProcessExitTimeout / 1000;
+            set => _Config.LauncherConfig.ProcessExitTimeout = value * 1000;
+        }
+        public int IdentificationTimeout
+        {
+            get => _Config.LauncherConfig.IdentifierTimeout / 1000;
+            set => _Config.LauncherConfig.IdentifierTimeout = value * 1000;
         }
         public bool RunOnStartup
         {

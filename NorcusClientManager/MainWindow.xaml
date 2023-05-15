@@ -6,7 +6,7 @@
         xmlns:System="clr-namespace:System;assembly=mscorlib"
         xmlns:local="clr-namespace:NorcusClientManager"
         mc:Ignorable="d"
-        Title="Norcus Client Manager" Height="420" Width="600"
+        Title="Norcus Client Manager" Height="430" Width="600"
         Name="NCMWindow">
     <Window.DataContext>
         <local:MainViewModel/>
@@ -15,23 +15,30 @@
         <Grid.RowDefinitions>
             <RowDefinition Height="95"/>
             <RowDefinition/>
-            <RowDefinition Height="95"/>
+            <RowDefinition Height="105"/>
         </Grid.RowDefinitions>
         <StackPanel
             Grid.Row="0"
             Orientation="Vertical"
             Margin="5, 0, 5, 0">
             <StackPanel
-                Orientation="Horizontal">                
+                Orientation="Horizontal"
+                Height="30">                
                 <TextBlock 
                     Text="Konfigurace:" 
                     VerticalAlignment="Center"/>
+                <Button
+                    Margin="5"
+                    ToolTip="Načíst"
+                    Command="{Binding LoadConfigCommand}">
+                    <Image Source="Icons\Open.png" Width="35"/>
+                </Button>
                 <Button 
-                    Content="Načíst" Margin="5"
-                    Command="{Binding LoadConfigCommand}"/>
-                <Button 
-                    Content="Uložit" Margin="5"
-                    Command="{Binding SaveConfigCommand}"/>
+                    Margin="5"
+                    ToolTip="Uložit"
+                    Command="{Binding SaveConfigCommand}">
+                    <Image Source="Icons\Save.png" Width="35"/>
+                </Button>
             </StackPanel>
             <Grid>
                 <Grid.ColumnDefinitions>
@@ -83,51 +90,68 @@
                     Height="17"
                     Text="Klienti:"/>
                 <StackPanel 
-                    Orientation="Horizontal">
+                    Orientation="Horizontal"
+                    Height="30">
                     <Button 
-                        Content="Přidat" Margin="5"
-                        Command="{Binding AddClientCommand}"/>
+                        ToolTip="Přidat" Margin="5"
+                        Command="{Binding AddClientCommand}">
+                        <Image Source="Icons\Add.png"/>
+                    </Button>
                     <Button 
-                        Content="Odstranit" Margin="5, 5, 20, 5"
-                        Command="{Binding RemoveClientCommand}"/>
+                        ToolTip="Odstranit" Margin="5, 5, 20, 5"
+                        Command="{Binding RemoveClientCommand}">
+                        <Image Source="Icons\Remove.png"/>
+                    </Button>
                     <Button 
-                        Content="Spustit" Margin="5"
-                        Command="{Binding RunClientsCommand}"/>
+                        ToolTip="Spustit" Margin="5"
+                        Command="{Binding RunClientsCommand}">
+                        <Image Source="Icons\Run.png" Width="35"/>
+                    </Button>
                     <Button 
-                        Content="Zastavit" Margin="5"
-                        Command="{Binding StopClientsCommand}"/>
+                        ToolTip="Zastavit" Margin="5"
+                        Command="{Binding StopClientsCommand}">
+                        <Image Source="Icons\Stop.png" Width="35"/>
+                    </Button>
                     <Button 
-                        Content="Restartovat" Margin="5"
-                        Command="{Binding RestartClientsCommand}"/>
+                        ToolTip="Restartovat" Margin="5"
+                        Command="{Binding RestartClientsCommand}">
+                        <Image Source="Icons\Refresh.png" Width="35"/>
+                    </Button>
                     <Button 
-                        Content="Identifikovat" Margin="5"
-                        Command="{Binding IdentifyClientsCommand}"/>
+                        ToolTip="Identifikovat" Margin="5"
+                        Command="{Binding IdentifyClientsCommand}">
+                        <Image Source="Icons\InfoTipInline.png" Width="35"/>
+                    </Button>
                 </StackPanel>
             </StackPanel>
             <DataGrid
                 Grid.Row="1"
-                Margin="5,6,5,4"
                 ItemsSource="{Binding ClientViews}"
                 SelectedItem="{Binding SelectedClient}"
                 CanUserAddRows="True"
                 CanUserDeleteRows="True"
                 AutoGenerateColumns="False"
+                CanUserReorderColumns="False"
+                CanUserSortColumns="False"
                 Name="clientsDataGrid">
                 <DataGrid.Columns>
                     <DataGridTextColumn
                         Header="Název"
                         Width="100"
+                        CanUserResize="False"
                         Binding="{Binding Name}"/>
                     <DataGridComboBoxColumn
                         Header="Start mode"
                         Width="75"
                         x:Name="modeComboBox"
+                        CanUserResize="False"
                         SelectedItemBinding="{Binding StartMode}"/>
                     <DataGridComboBoxColumn
                         Header="Displej"
-                        Width="300"
+                        Width="325"
                         SelectedValueBinding="{Binding Display}"
-                        x:Name="displaysComboBox">
+                        x:Name="displaysComboBox"
+                        CanUserResize="True">
                         <DataGridComboBoxColumn.ElementStyle>
                             <Style TargetType="ComboBox">
                                 <Setter Property="ItemsSource" Value="{Binding DataContext.DisplayList, RelativeSource={RelativeSource AncestorType={x:Type DataGrid}}}" />
@@ -139,24 +163,36 @@
                             </Style>
                         </DataGridComboBoxColumn.EditingElementStyle>
                     </DataGridComboBoxColumn>
-                    <DataGridTemplateColumn>
+                    <DataGridTemplateColumn
+                        Width="25"
+                        CanUserResize="False">
                         <DataGridTemplateColumn.CellTemplate>
                             <DataTemplate>
-                                <Button Command="{Binding RunCommand}">Run</Button>
+                                <Button Command="{Binding RunCommand}" Width="25" Height="20">
+                                    <Image Source="Icons\Run.png"/>
+                                </Button>
                             </DataTemplate>
                         </DataGridTemplateColumn.CellTemplate>
                     </DataGridTemplateColumn>
-                    <DataGridTemplateColumn>
+                    <DataGridTemplateColumn
+                        Width="25"
+                        CanUserResize="False">
                         <DataGridTemplateColumn.CellTemplate>
                             <DataTemplate>
-                                <Button Command="{Binding StopCommand}">Stop</Button>
+                                <Button Command="{Binding StopCommand}" Width="25" Height="20">
+                                    <Image Source="Icons\Stop.png"/>
+                                </Button>
                             </DataTemplate>
                         </DataGridTemplateColumn.CellTemplate>
                     </DataGridTemplateColumn>
-                    <DataGridTemplateColumn>
+                    <DataGridTemplateColumn
+                        Width="25"
+                        CanUserResize="False">
                         <DataGridTemplateColumn.CellTemplate>
                             <DataTemplate>
-                                <Button Command="{Binding RestartCommand}">Restart</Button>
+                                <Button Command="{Binding RestartCommand}" Width="25" Height="20">
+                                    <Image Source="Icons\Refresh.png"/>
+                                </Button>
                             </DataTemplate>
                         </DataGridTemplateColumn.CellTemplate>
                     </DataGridTemplateColumn>
@@ -177,15 +213,16 @@
                     <Grid.RowDefinitions>
                         <RowDefinition/>
                         <RowDefinition/>
+                        <RowDefinition/>
                     </Grid.RowDefinitions>
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="195"/>
-                        <ColumnDefinition Width="45"/>
+                        <ColumnDefinition Width="30"/>
                         <ColumnDefinition Width="*"/>
                     </Grid.ColumnDefinitions>
                     <TextBlock 
                         Grid.Row="0" Grid.Column="0"
-                        Text="Timeout pro spuštění procesu (ms):"
+                        Text="Timeout pro spuštění procesu (s):"
                         Margin="2"/>
                     <TextBox
                         Grid.Row="0" Grid.Column="1"
@@ -193,17 +230,26 @@
                         Text="{Binding WindowHandleTimeout}"/>
                     <TextBlock 
                         Grid.Row="1" Grid.Column="0"
-                        Text="Timeout pro ukončení procesu (ms):"
+                        Text="Timeout pro ukončení procesu (s):"
                         Margin="2"/>
                     <TextBox
                         Grid.Row="1" Grid.Column="1"
                         Margin="2"
                         Text="{Binding ProcessExitTimeout}"/>
+                    <TextBlock 
+                        Grid.Row="2" Grid.Column="0"
+                        Text="Timeout identifikace displejů (s):"
+                        Margin="2"/>
+                    <TextBox
+                        Grid.Row="2" Grid.Column="1"
+                        Margin="2"
+                        Text="{Binding IdentificationTimeout}"/>
                 </Grid>
             </StackPanel>
             <StackPanel 
                 Grid.Column="1"
-                Orientation="Vertical">
+                Orientation="Vertical"
+                Margin="0,6,0,4">
                 <TextBlock Text="Spouštění:"/>
                 <CheckBox
                     Margin="5, 5, 0, 0"
