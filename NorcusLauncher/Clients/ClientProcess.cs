@@ -16,6 +16,7 @@ namespace NorcusLauncher.Clients
 {
     public class ClientProcess
     {
+        private static readonly NLog.Logger _logger = NLog.LogManager.GetCurrentClassLogger();
         [DllImport("user32.dll", EntryPoint = "SetWindowPos")]
         private static extern IntPtr SetWindowPos(IntPtr hWnd, int hWndInsertAfter, int x, int Y, int cx, int cy, int wFlags);
 
@@ -33,7 +34,7 @@ namespace NorcusLauncher.Clients
         public void Run()
         {
             if (Display is null || !Display.IsConnected || this.IsRunning) return;
-            Console.WriteLine("Starting client " + ClientInfo.Name);
+            _logger.Debug("Starting client {0}", ClientInfo.Name);
             string startMode;
             switch (ClientInfo.StartMode)
             {
@@ -55,7 +56,7 @@ namespace NorcusLauncher.Clients
 
             Process.StartInfo = new ProcessStartInfo(_Config.ChromePath, arguments);
             _StartProcessOnPosition(Process, Display.WorkingArea);
-            Console.WriteLine($"Client {ClientInfo.Name} started with arguments:\n{arguments}");
+            _logger.Debug("Client {0} (PID {1}) started with arguments: {2}", ClientInfo.Name, Process.Id, arguments);
         }
         public void Stop()
         {
@@ -63,27 +64,28 @@ namespace NorcusLauncher.Clients
 
             try
             {
-                Console.WriteLine("Stopping client " + ClientInfo.Name);
+                _logger.Debug("Stopping client {0} (PID {1})", ClientInfo.Name, Process.Id);
                 if (!Process.CloseMainWindow())
                 {
-                    Console.WriteLine("CloseMainWindow failed");
+                    _logger.Debug("CloseMainWindow failed");
                     Process.Kill(true);
-                    Console.WriteLine("Process killed");
+                    _logger.Debug("Process killed");
                 }
                 else if (!Process.WaitForExit(_Config.ProcessExitTimeout))
                 {
-                    Console.WriteLine("WaitForExit failed");
+                    _logger.Debug("WaitForExit failed");
                     Process.Kill(true);
-                    Console.WriteLine("Process killed");
+                    _logger.Debug("Process killed");
                 }
                 else
-                    Console.WriteLine("Process stopped properly");
+                    _logger.Debug("Process stopped properly");
             }
-            catch (Exception e) { Console.WriteLine(e); }
+            catch (Exception e) { _logger.Warn(e, "Error occured while stopping the process"); }
             finally { Process.Close(); }
         }
         public void Restart()
         {
+            _logger.Debug("Restarting client {0}", ClientInfo.Name);
             Stop();
             if (Process.IsRunning() && Process.HasExited)
                 Process.Close();
@@ -100,7 +102,7 @@ namespace NorcusLauncher.Clients
         public void UpdateWindowPosition()
         {
             if (Display is null || !IsRunning) return;
-            
+            _logger.Debug("Updating window position (client: {0}, new position: {1})", ClientInfo.Name, Display.WorkingArea);
             SetWindowPos(Process.MainWindowHandle, 0, Display.WorkingArea.Left, Display.WorkingArea.Top, Display.WorkingArea.Width, Display.WorkingArea.Height, SWP_SHOWWINDOW);
         }
         private void _StartProcessOnPosition(Process process, Rectangle windowPosition)

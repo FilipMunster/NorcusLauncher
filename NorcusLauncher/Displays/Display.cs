@@ -13,6 +13,7 @@ namespace NorcusLauncher.Displays
 {
     public class Display
     {
+        private static readonly NLog.Logger _logger = NLog.LogManager.GetCurrentClassLogger();
         /// <summary>
         /// Pořadí displeje, hodnotu potřeba zadat ručně. Pouze pro snažší identifikaci v seznamu. Nezávisí na něm logika.
         /// </summary>
@@ -42,6 +43,7 @@ namespace NorcusLauncher.Displays
         }
         public void DisplayConnected(WindowsDisplayAPI.Display display)
         {
+            _logger.Debug("Adding display {0} to client {1}", display, this);
             (string vendor, string displayID) = ParseDevicePath(display.DevicePath);
             if (displayID != DisplayID)
                 throw new ArgumentException($"DisplayID se neshodují (původní: {DisplayID}, nové: {displayID})");
@@ -51,6 +53,7 @@ namespace NorcusLauncher.Displays
         }
         public void DisplayDisconnected()
         {
+            _logger.Debug("Display disconnected (client {0})", this);
             WorkingArea = Rectangle.Empty;
             IsConnected = false;
         }

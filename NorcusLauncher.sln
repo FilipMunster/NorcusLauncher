@@ -7,7 +7,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NorcusLauncher", "NorcusLau
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Tester", "Tester\Tester.csproj", "{2A3E85F0-F69F-481B-ACEB-0005433CD923}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NorcusClientManager", "NorcusClientManager\NorcusClientManager.csproj", "{D00485DE-5C61-4B74-BEB1-B98B9F219E0E}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NorcusClientManager", "NorcusClientManager\NorcusClientManager.csproj", "{D00485DE-5C61-4B74-BEB1-B98B9F219E0E}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

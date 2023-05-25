@@ -104,7 +104,16 @@ namespace NorcusClientManager
         public ObservableCollection<Display> DisplayList =>
             _Launcher.DisplayHandler.Displays.ToObservableCollection() ?? new ObservableCollection<Display>();
         public ObservableCollection<ClientView> ClientViews { get; } = new();
-        public ClientView SelectedClient { get; set; }
+        private ClientView _selectedClient;
+        public ClientView SelectedClient
+        {
+            get => _selectedClient;
+            set
+            {
+                _selectedClient = value;
+                OnPropertyChanged(nameof(ClientViews));
+            }
+        }
         #endregion
 
         public event PropertyChangedEventHandler? PropertyChanged;
@@ -113,7 +122,7 @@ namespace NorcusClientManager
         public MainViewModel()
         {
             _LoadConfig();
-            _DoStartupEvents();
+            _StartupActions();
         }
 
         private void _LoadConfig()
@@ -124,7 +133,7 @@ namespace NorcusClientManager
             _Launcher.DisplayHandler.DisplayChanged += DisplayHandler_DisplayChanged;
             _GenerateClientViews();
         }
-        private void _DoStartupEvents()
+        private void _StartupActions()
         {
             if (AutoIdentify) _Launcher?.IdentifyDisplays();
             if (AutoLaunch) _Launcher?.RunClients();
@@ -155,10 +164,12 @@ namespace NorcusClientManager
         private void _RunClients()
         {
             _Launcher?.RunClients();
+            OnPropertyChanged(nameof(ClientViews));
         }
         private void _StopClients()
         {
             _Launcher?.StopClients();
+            OnPropertyChanged(nameof(ClientViews));
         }
         private void _RestartClients()
         {
@@ -175,12 +186,16 @@ namespace NorcusClientManager
             {
                 ClientViews.Add(new ClientView(cliProc, _Launcher));
             }
-            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(DisplayList)));
+            OnPropertyChanged(nameof(DisplayList));
         }
         private void DisplayHandler_DisplayChanged(object sender, NorcusLauncher.Displays.DisplayHandler.DisplayChangeEventArgs e)
         {
-            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(DisplayList)));
+            OnPropertyChanged(nameof(DisplayList));
             DataGridChanged?.Invoke(this, EventArgs.Empty);
+        }
+        private void OnPropertyChanged([CallerMemberName] string name = "")
+        {
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(name));
         }
     }
 }

@@ -15,6 +15,7 @@ namespace NorcusLauncher
 {
     public class Launcher
     {
+        private static readonly NLog.Logger _logger = NLog.LogManager.GetCurrentClassLogger();
         public List<ClientProcess> Clients { get; private set; } = new List<ClientProcess>();
         public DisplayHandler DisplayHandler { get; private set; } = new DisplayHandler();
         public IConfig Config { get; private set; }
@@ -53,12 +54,13 @@ namespace NorcusLauncher
         /// </summary>
         public void RefreshClients()
         {
+            _logger.Debug("Refreshing clients");
             Clients.ForEach(cli => cli.Stop());
 
             Clients.Clear();
             foreach (var client in Config.ClientInfos)
             {
-                ClientProcess cliProc = new ClientProcess(client, Config); 
+                ClientProcess cliProc = new ClientProcess(client, Config);
                 cliProc.Display = DisplayHandler.Displays.FirstOrDefault(x => x.DisplayID == cliProc.ClientInfo.DisplayID)
                     ?? new Display(cliProc.ClientInfo.DisplayID);
                 Clients.Add(cliProc);
@@ -66,10 +68,10 @@ namespace NorcusLauncher
 
             if (ClientsAreRunning) RunClients();
         }
-        public void RunClients() { ClientsAreRunning = true; Clients.ForEach(cli => cli.Run()); }
-        public void RestartClients() => Clients.ForEach(cli => cli.Restart());
-        public void StopClients() { ClientsAreRunning = false; Clients.ForEach(cli => cli.Stop()); }
-        public void IdentifyDisplays() => Clients.ForEach(cli => cli.IdentifyDisplay());
+        public void RunClients() { _logger.Debug("Starting all clients"); ClientsAreRunning = true; Clients.ForEach(cli => cli.Run()); }
+        public void RestartClients() { _logger.Debug("Restarting all clients"); Clients.ForEach(cli => cli.Restart());}
+        public void StopClients() { _logger.Debug("Stopping all clients"); ClientsAreRunning = false; Clients.ForEach(cli => cli.Stop()); }
+        public void IdentifyDisplays() { _logger.Debug("Identifying all displays"); Clients.ForEach(cli => cli.IdentifyDisplay()); }
 
         /// <summary>
         /// Přidá do kolekce displejů v Handleru displeje načtené z Configu. Zamezí duplicitním displejům.
@@ -83,7 +85,10 @@ namespace NorcusLauncher
             foreach (var id in configIds)
             {
                 if (!currentIds.Contains(id))
+                {
                     DisplayHandler.Displays.Add(new Display(id));
+                    _logger.Debug("Display {0} is not connected. It was added as blank display.", id);
+                }
             }
         }
     }
