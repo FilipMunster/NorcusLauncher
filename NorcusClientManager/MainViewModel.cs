@@ -21,6 +21,7 @@ namespace NorcusClientManager
     {
         private Config _Config { get; set; }
         private Launcher _Launcher { get; set; }
+        private API.Server _APIServer { get; set; }
         
         #region Commands
         private ICommand _loadConfigCommand;
@@ -137,12 +138,14 @@ namespace NorcusClientManager
         {
             if (AutoIdentify) _Launcher?.IdentifyDisplays();
             if (AutoLaunch) _Launcher?.RunClients();
+            if (true) _APIServer = new API.Server(_Launcher);
         }
 
         private void _SaveConfig()
         {
             _Config?.Save();
             _Launcher?.RefreshClients();
+            _GenerateClientViews();
         }
         private void _AddClient()
         {

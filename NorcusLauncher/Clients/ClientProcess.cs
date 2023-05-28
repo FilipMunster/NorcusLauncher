@@ -123,5 +123,9 @@ namespace NorcusLauncher.Clients
                 .Select(ip => ip.ToString());
             return String.Join(", ", ips);
         }
+        public override string ToString()
+        {
+            return "Client " + ClientInfo.Name + (IsRunning ? $" (running on {Display})" : " (not running)"); 
+        }
     }
 }

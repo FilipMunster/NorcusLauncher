@@ -13,7 +13,7 @@ using System.Windows.Forms;
 
 namespace NorcusLauncher
 {
-    public class Launcher
+    public class Launcher : ILauncher
     {
         private static readonly NLog.Logger _logger = NLog.LogManager.GetCurrentClassLogger();
         public List<ClientProcess> Clients { get; private set; } = new List<ClientProcess>();
@@ -69,7 +69,7 @@ namespace NorcusLauncher
             if (ClientsAreRunning) RunClients();
         }
         public void RunClients() { _logger.Debug("Starting all clients"); ClientsAreRunning = true; Clients.ForEach(cli => cli.Run()); }
-        public void RestartClients() { _logger.Debug("Restarting all clients"); Clients.ForEach(cli => cli.Restart());}
+        public void RestartClients() { _logger.Debug("Restarting all clients"); Clients.ForEach(cli => cli.Restart()); }
         public void StopClients() { _logger.Debug("Stopping all clients"); ClientsAreRunning = false; Clients.ForEach(cli => cli.Stop()); }
         public void IdentifyDisplays() { _logger.Debug("Identifying all displays"); Clients.ForEach(cli => cli.IdentifyDisplay()); }
 
@@ -81,7 +81,7 @@ namespace NorcusLauncher
         {
             var currentIds = DisplayHandler.Displays.Select(d => d.DisplayID).ToList();
             var configIds = Config.ClientInfos.Select(x => x.DisplayID);
-            
+
             foreach (var id in configIds)
             {
                 if (!currentIds.Contains(id))
