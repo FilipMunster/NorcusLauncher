@@ -2,6 +2,6 @@
 {
     public interface ITokenAuthenticator
     {
-        bool Authenticate(string token);
+        bool IsTokenValid(string token);
     }
 }

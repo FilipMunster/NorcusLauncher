@@ -30,6 +30,9 @@ namespace NorcusClientManager.API.Resources
         [RestRoute("Get", "{id:num}")]
         public async Task GetClients(IHttpContext context)
         {
+            string jwtToken = context.Request.Headers.GetValue<string>("Authorization").Split(' ')[1];
+            bool tokenValid = _authenticator.IsTokenValid(jwtToken);
+
             int? id = _clientsModel.GetIdFromPath(context.Request.PathParameters, out bool idOutOfRange);
             if (idOutOfRange)
             {

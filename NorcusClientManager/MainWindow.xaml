@@ -310,7 +310,7 @@
                     IsChecked="{Binding RunOnStartup}"/>
                 <CheckBox
                     Margin="5, 2, 0, 0"
-                    Content="Minmalizovat do tray"
+                    Content="Minimalizovat do tray"
                     IsChecked="{Binding StartInTray}"/>
                 <CheckBox
                     Margin="5, 2, 0, 0"
