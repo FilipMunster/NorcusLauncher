@@ -27,27 +27,22 @@ namespace NorcusClientManager.API.Resources
         }
 
         [RestRoute("Get", "")]
+        [RestRoute("Get", "{id:num}")]
         public async Task GetClients(IHttpContext context)
         {
-            context.Response.ContentType = "application/json";
-            context.Response.StatusCode = HttpStatusCode.Ok;
-            await context.Response.SendResponseAsync(_clientsModel.GetClients()).ConfigureAwait(false);
-        }
-
-        [RestRoute("Get", "{id:num}")]
-        public async Task GetClient(IHttpContext context)
-        {
-            bool idOk = int.TryParse(context.Request.PathParameters["id"], out int id);
-            if (!idOk || id > _launcher.Clients.Count)
+            int? id = _clientsModel.GetIdFromPath(context.Request.PathParameters, out bool idOutOfRange);
+            if (idOutOfRange)
             {
                 context.Response.StatusCode = HttpStatusCode.BadRequest;
                 await context.Response.SendResponseAsync();
                 return;
             }
 
+            string response = id.HasValue ? _clientsModel.GetClient(id.Value) : _clientsModel.GetClients();
+
             context.Response.ContentType = "application/json";
             context.Response.StatusCode = HttpStatusCode.Ok;
-            await context.Response.SendResponseAsync(_clientsModel.GetClient(id)).ConfigureAwait(false);
+            await context.Response.SendResponseAsync(response).ConfigureAwait(false);
         }
 
         [RestRoute("Post", "run")]

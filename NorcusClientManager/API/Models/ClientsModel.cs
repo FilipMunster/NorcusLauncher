@@ -35,7 +35,7 @@ namespace NorcusClientManager.API.Models
         public int? GetIdFromPath(IDictionary<string, string> pathParameters, out bool idOutOfRange)
         {
             idOutOfRange = false;
-            if (!pathParameters.TryGetValue("id", out string idString)) return null;
+            if (!pathParameters.TryGetValue("id", out string? idString)) return null;
             if (!int.TryParse(idString, out int id)) return null;
             if (id >= _launcher.Clients.Count) idOutOfRange = true;
             return id;
