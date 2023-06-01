@@ -23,6 +23,8 @@ namespace NorcusLauncher.Displays
         public Rectangle WorkingArea { get; private set; }
         public bool IsConnected { get; private set; }
         private string _DisplayNameBase { get; set; } = "";
+
+        private Form _IdentifierForm { get; set; }
         /// <summary>
         /// Vytvoří prázdný displej, ke kterému znám jen DisplayID, ale zatím není připojený.
         /// </summary>
@@ -59,9 +61,10 @@ namespace NorcusLauncher.Displays
         }
         public void Identify(TimeSpan timeout, string additionalText = "", string footer = "")
         {
-            if (!IsConnected) return;
+            if (!IsConnected || (_IdentifierForm is not null && !_IdentifierForm.IsDisposed)) return;
             IdentifierForm identifierForm = new IdentifierForm(timeout, this, additionalText, footer);
             Task.Run(() => { Application.Run(identifierForm); });
+            _IdentifierForm = identifierForm;
         }
         public override string ToString() => Name;
 
