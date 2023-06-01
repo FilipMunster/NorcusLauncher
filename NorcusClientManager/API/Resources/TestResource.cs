@@ -15,10 +15,12 @@ namespace NorcusClientManager.API.Resources
     {
         private readonly ILauncher _launcher;
         private readonly ILogger _logger;
-        public TestResource(ILauncher launcher, ILogger<TestResource> logger)
+        private readonly ITokenAuthenticator _authenticator;
+        public TestResource(ILauncher launcher, ILogger<TestResource> logger, ITokenAuthenticator authenticator)
         {
             _launcher = launcher;
             _logger = logger;
+            _authenticator = authenticator;
         }
         [RestRoute("Get", "/api/test")] 
         public async Task Test(IHttpContext context)

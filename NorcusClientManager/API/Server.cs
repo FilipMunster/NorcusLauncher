@@ -13,23 +13,26 @@ namespace NorcusClientManager.API
 {
     public class Server
     {
-        public Server(ILauncher launcher)
+        private IRestServer _server;
+        public Server(ILauncher launcher, int port, string secureKey)
         {
             RestServerBuilder serverBuilder = RestServerBuilder.UseDefaults();
             serverBuilder.Services.AddSingleton<ILauncher>(launcher);
+            serverBuilder.Services.AddSingleton<ITokenAuthenticator>(new JWTAuthenticator(secureKey));
             serverBuilder.Services.AddLogging(loggingBuilder => 
                 {
                     loggingBuilder.ClearProviders();
                     loggingBuilder.AddNLog("NLog.config");
                 });
-            
-            IRestServer server = serverBuilder.Build();
-            server.Prefixes.Clear();
-            server.Prefixes.Add($"https://+:443/");
-            server.AutoParseFormUrlEncodedData();
-            server.Router.Options.SendExceptionMessages = true;
-            
-            server.Start();
+
+            _server = serverBuilder.Build();
+            _server.Prefixes.Clear();
+            //_server.Prefixes.Add($"https://+:{port}/");
+            _server.Prefixes.Add($"http://localhost:{port}/");
+            _server.AutoParseFormUrlEncodedData();
+            _server.Router.Options.SendExceptionMessages = true;
         }
+        public void Start() => _server.Start();
+        public void Stop() => _server.Stop();
     }
 }

@@ -21,7 +21,7 @@ namespace NorcusClientManager
     {
         private Config _Config { get; set; }
         private Launcher _Launcher { get; set; }
-        private API.Server _APIServer { get; set; }
+        private API.Server? _APIServer { get; set; }
         
         #region Commands
         private ICommand _loadConfigCommand;
@@ -50,6 +50,14 @@ namespace NorcusClientManager
         public ICommand IdentifyClientsCommand => _identifyClientsCommand ??= new RelayCommand<object>(
             (o) => _IdentifyClients(),
             (o) => ClientViews.Count > 0);
+        private ICommand _apiServerStartCommand;
+        public ICommand APIServerStartCommand => _apiServerStartCommand ??= new RelayCommand<object>(
+            (o) => _APIServerStart(),
+            (o) => !_APIServerIsRunning);
+        private ICommand _apiServerStopCommand;
+        public ICommand APIServerStopCommand => _apiServerStopCommand ??= new RelayCommand<object>(
+            (o) => _APIServerStop(),
+            (o) => _APIServerIsRunning);
         #endregion
         #region Properties
         public string ChromePath
@@ -102,6 +110,21 @@ namespace NorcusClientManager
             get => _Config.AutoIdentify;
             set => _Config.AutoIdentify = value;
         }
+        public bool APIAutoStart
+        {
+            get => _Config.APIAutoStart;
+            set => _Config.APIAutoStart = value;
+        }
+        public int APIPort
+        {
+            get => _Config.APIPort;
+            set => _Config.APIPort = value;
+        }
+        public string APIKey
+        {
+            get => _Config.APIKey;
+            set => _Config.APIKey = value;
+        }
         public ObservableCollection<Display> DisplayList =>
             _Launcher.DisplayHandler.Displays.ToObservableCollection() ?? new ObservableCollection<Display>();
         public ObservableCollection<ClientView> ClientViews { get; } = new();
@@ -115,6 +138,7 @@ namespace NorcusClientManager
                 OnPropertyChanged(nameof(ClientViews));
             }
         }
+        private bool _APIServerIsRunning { get; set; }
         #endregion
 
         public event PropertyChangedEventHandler? PropertyChanged;
@@ -136,9 +160,9 @@ namespace NorcusClientManager
         }
         private void _StartupActions()
         {
-            if (AutoIdentify) _Launcher?.IdentifyDisplays();
-            if (AutoLaunch) _Launcher?.RunClients();
-            if (true) _APIServer = new API.Server(_Launcher);
+            if (AutoIdentify) _Launcher.IdentifyDisplays();
+            if (AutoLaunch) _Launcher.RunClients();
+            if (APIAutoStart) _APIServerStart();
         }
 
         private void _SaveConfig()
@@ -199,6 +223,19 @@ namespace NorcusClientManager
         private void OnPropertyChanged([CallerMemberName] string name = "")
         {
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(name));
+        }
+        private void _APIServerStart()
+        {
+            _APIServer?.Stop();
+            _APIServer = new API.Server(_Launcher, APIPort, APIKey);
+            _APIServer.Start();
+            _APIServerIsRunning = true;
+        }
+        private void _APIServerStop()
+        {
+            _APIServer?.Stop();
+            _APIServer = null;
+            _APIServerIsRunning = false;
         }
     }
 }

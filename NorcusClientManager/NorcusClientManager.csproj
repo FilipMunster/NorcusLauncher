@@ -12,6 +12,7 @@
     <None Remove="Icons\Add.png" />
     <None Remove="Icons\InfoTipInline.png" />
     <None Remove="Icons\music_library.ico" />
+    <None Remove="Icons\NewKey.png" />
     <None Remove="Icons\Open.png" />
     <None Remove="Icons\OpenFolder.png" />
     <None Remove="Icons\Refresh.png" />
@@ -36,6 +37,7 @@
     <Resource Include="Icons\Add.png" />
     <Resource Include="Icons\InfoTipInline.png" />
     <Resource Include="Icons\music_library.ico" />
+    <Resource Include="Icons\NewKey.png" />
     <Resource Include="Icons\Open.png" />
     <Resource Include="Icons\OpenFolder.png" />
     <Resource Include="Icons\Refresh.png" />

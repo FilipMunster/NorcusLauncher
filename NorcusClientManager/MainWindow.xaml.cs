@@ -47,5 +47,9 @@ namespace NorcusClientManager
         {
             NCMWindow.Visibility = NCMWindow.Visibility == Visibility.Visible ? Visibility.Hidden : Visibility.Visible;
         }
+        private void KeyButton_Click(object sender, RoutedEventArgs e)
+        {
+            KeyPasswordBox.Visibility = KeyPasswordBox.Visibility == Visibility.Visible ? Visibility.Collapsed : Visibility.Visible;
+        }
     }
 }

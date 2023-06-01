@@ -22,6 +22,9 @@ namespace NorcusClientManager
         public bool StartInTray { get; set; }
         public bool AutoLaunch { get; set; }
         public bool AutoIdentify { get; set; }
+        public bool APIAutoStart { get; set; }
+        public int APIPort { get; set; } = 443;
+        public string APIKey { get; set; } = "";
 
         public static string GetDefaultConfigFilePath() =>
             Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location) + "\\" +
