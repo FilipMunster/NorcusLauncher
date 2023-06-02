@@ -7,6 +7,7 @@ using System.Collections.Generic;
 using System.Configuration;
 using System.Diagnostics;
 using System.Linq;
+using System.Security.Claims;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -28,6 +29,12 @@ namespace NorcusClientManager.API.Resources
         [RestRoute("Post", "shutdown")]
         public async Task Shutdown(IHttpContext context)
         {
+            if (!_authenticator.ValidateFromContext(context, new Claim("CanControlMachine", "true")))
+            {
+                await context.Response.SendResponseAsync(HttpStatusCode.Forbidden);
+                return;
+            }
+
             context.Response.StatusCode = HttpStatusCode.Ok;
             await context.Response.SendResponseAsync();
 
@@ -37,6 +44,12 @@ namespace NorcusClientManager.API.Resources
         [RestRoute("Post", "restart")]
         public async Task Restart(IHttpContext context)
         {
+            if (!_authenticator.ValidateFromContext(context, new Claim("CanControlMachine", "true")))
+            {
+                await context.Response.SendResponseAsync(HttpStatusCode.Forbidden);
+                return;
+            }
+
             context.Response.StatusCode = HttpStatusCode.Ok;
             await context.Response.SendResponseAsync();
 

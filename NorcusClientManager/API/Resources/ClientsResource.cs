@@ -5,7 +5,9 @@ using NorcusLauncher;
 using System;
 using System.Collections.Generic;
 using System.Configuration;
+using System.IO;
 using System.Linq;
+using System.Security.Claims;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -30,14 +32,16 @@ namespace NorcusClientManager.API.Resources
         [RestRoute("Get", "{id:num}")]
         public async Task GetClients(IHttpContext context)
         {
-            string jwtToken = context.Request.Headers.GetValue<string>("Authorization").Split(' ')[1];
-            bool tokenValid = _authenticator.IsTokenValid(jwtToken);
+            if (!_authenticator.ValidateFromContext(context))
+            {
+                await context.Response.SendResponseAsync(HttpStatusCode.Forbidden);
+                return;
+            }
 
             int? id = _clientsModel.GetIdFromPath(context.Request.PathParameters, out bool idOutOfRange);
             if (idOutOfRange)
             {
-                context.Response.StatusCode = HttpStatusCode.BadRequest;
-                await context.Response.SendResponseAsync();
+                await context.Response.SendResponseAsync(HttpStatusCode.BadRequest);
                 return;
             }
 
@@ -52,6 +56,12 @@ namespace NorcusClientManager.API.Resources
         [RestRoute("Post", "{id:num}/run")]
         public async Task RunClients(IHttpContext context)
         {
+            if (!_authenticator.ValidateFromContext(context, new Claim("CanControlClients", "true")))
+            {
+                await context.Response.SendResponseAsync(HttpStatusCode.Forbidden);
+                return;
+            }
+
             int? id = _clientsModel.GetIdFromPath(context.Request.PathParameters, out bool idOutOfRange);
             if (idOutOfRange)
             {
@@ -71,6 +81,12 @@ namespace NorcusClientManager.API.Resources
         [RestRoute("Post", "{id:num}/stop")]
         public async Task StopClients(IHttpContext context)
         {
+            if (!_authenticator.ValidateFromContext(context, new Claim("CanControlClients", "true")))
+            {
+                await context.Response.SendResponseAsync(HttpStatusCode.Forbidden);
+                return;
+            }
+
             int? id = _clientsModel.GetIdFromPath(context.Request.PathParameters, out bool idOutOfRange);
             if (idOutOfRange)
             {
@@ -90,6 +106,12 @@ namespace NorcusClientManager.API.Resources
         [RestRoute("Post", "{id:num}/restart")]
         public async Task RestartClients(IHttpContext context)
         {
+            if (!_authenticator.ValidateFromContext(context, new Claim("CanControlClients", "true")))
+            {
+                await context.Response.SendResponseAsync(HttpStatusCode.Forbidden);
+                return;
+            }
+
             int? id = _clientsModel.GetIdFromPath(context.Request.PathParameters, out bool idOutOfRange);
             if (idOutOfRange)
             {
@@ -109,6 +131,12 @@ namespace NorcusClientManager.API.Resources
         [RestRoute("Post", "{id:num}/identify")]
         public async Task IdentifyClients(IHttpContext context)
         {
+            if (!_authenticator.ValidateFromContext(context, new Claim("CanControlClients", "true")))
+            {
+                await context.Response.SendResponseAsync(HttpStatusCode.Forbidden);
+                return;
+            }
+
             int? id = _clientsModel.GetIdFromPath(context.Request.PathParameters, out bool idOutOfRange);
             if (idOutOfRange)
             {
