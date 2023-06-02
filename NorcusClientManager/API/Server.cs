@@ -27,8 +27,7 @@ namespace NorcusClientManager.API
 
             _server = serverBuilder.Build();
             _server.Prefixes.Clear();
-            //_server.Prefixes.Add($"https://+:{port}/");
-            _server.Prefixes.Add($"http://localhost:{port}/");
+            _server.Prefixes.Add($"https://+:{port}/");
             _server.AutoParseFormUrlEncodedData();
             _server.Router.Options.SendExceptionMessages = true;
         }
