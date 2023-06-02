@@ -19,17 +19,17 @@ namespace NorcusClientManager.API.Models
         }
         public string GetClients()
         {
-            List<Client> clients = new();
+            List<IClient> clients = new();
             for (int i = 0; i < _launcher.Clients.Count; i++)
             {
                 clients.Add(new Client(i, _launcher.Clients[i]));
             }
-            return JsonSerializer.Serialize<List<Client>>(clients);
+            return JsonSerializer.Serialize<List<IClient>>(clients);
         }
         public string GetClient(int index)
         {
             if (index >= _launcher.Clients.Count) return "";
-            return JsonSerializer.Serialize<Client>(new Client(index, _launcher.Clients[index]));
+            return JsonSerializer.Serialize<IClient>(new Client(index, _launcher.Clients[index]));
         }
 
         public int? GetIdFromPath(IDictionary<string, string> pathParameters, out bool idOutOfRange)
@@ -41,7 +41,15 @@ namespace NorcusClientManager.API.Models
             return id;
         }
 
-        public class Client
+        public interface IClient
+        {
+            int Id { get; set; }
+            string Name { get; set; }
+            string Display { get; set; }
+            bool IsRunning { get; set; }
+        }
+
+        public class Client : IClient
         {
             public int Id { get; set; }
             public string Name { get; set; }

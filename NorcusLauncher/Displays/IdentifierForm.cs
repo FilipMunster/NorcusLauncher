@@ -32,7 +32,7 @@ namespace NorcusLauncher.Displays
             _Display = display;
             _TimeOut = timeOut;
         }
-        protected override async void OnShown(EventArgs e)
+        protected override void OnShown(EventArgs e)
         {
             base.OnShown(e);
 

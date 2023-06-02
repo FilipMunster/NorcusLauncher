@@ -37,6 +37,8 @@ namespace NorcusClientManager.API
             => ValidateFromContext(context, new[] { requiredClaim });
         public bool ValidateFromContext(IHttpContext context, IEnumerable<Claim> requiredClaims)
         {
+            if (string.IsNullOrEmpty(_key)) return true;
+
             string jwtToken = context.Request.Headers.GetValue<string>("Authorization").Split(' ', StringSplitOptions.RemoveEmptyEntries)[1];
             var token = _ProcessToken(jwtToken);
 

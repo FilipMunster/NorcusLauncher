@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace NorcusLauncher.Clients
 {
-    public class ClientInfo : IClient
+    public class ClientInfo
     {
         public string Name { get; set; } = "";
         public string DisplayID { get; set; } = "";
