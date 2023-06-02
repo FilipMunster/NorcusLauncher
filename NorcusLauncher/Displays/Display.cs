@@ -24,7 +24,7 @@ namespace NorcusLauncher.Displays
         public bool IsConnected { get; private set; }
         private string _DisplayNameBase { get; set; } = "";
 
-        private Form _IdentifierForm { get; set; }
+        private Form? _IdentifierForm { get; set; }
         /// <summary>
         /// Vytvoří prázdný displej, ke kterému znám jen DisplayID, ale zatím není připojený.
         /// </summary>

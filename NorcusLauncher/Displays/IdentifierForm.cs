@@ -7,6 +7,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using Timer = System.Windows.Forms.Timer;
 
 namespace NorcusLauncher.Displays
 {
@@ -40,8 +41,9 @@ namespace NorcusLauncher.Displays
             int x = xCenter - (Width / 2);
             int y = yCenter - (Height / 2);
             SetDesktopLocation(x, y);
-            await Task.Delay(_TimeOut);
-            Close();
+            Timer timer = new Timer() { Interval = (int)_TimeOut.TotalMilliseconds };
+            timer.Tick += (_, _) => Close();
+            timer.Start();
         }
 
         private void IdentifierForm_Load(object sender, EventArgs e)
