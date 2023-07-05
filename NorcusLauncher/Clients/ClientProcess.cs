@@ -96,8 +96,8 @@ namespace NorcusLauncher.Clients
             if (Display is null)
                 return;
             if (timeout == default)
-                timeout = new TimeSpan(0, 0, 0, 0, _Config.IdentifierTimeout);
-            Display.Identify(timeout, ClientInfo.Name, _GetLocalIPAddress());
+                timeout = TimeSpan.FromMilliseconds(_Config.IdentifierTimeout);
+            Display.Identify(timeout, ClientInfo.Name, GetLocalIPAddress());
         }
         public void UpdateWindowPosition()
         {
@@ -115,7 +115,7 @@ namespace NorcusLauncher.Clients
             }
             SetWindowPos(process.MainWindowHandle, 0, windowPosition.Left, windowPosition.Top, windowPosition.Width, windowPosition.Height, SWP_SHOWWINDOW);
         }
-        private string _GetLocalIPAddress()
+        public static string GetLocalIPAddress()
         {
             var host = Dns.GetHostEntry(Dns.GetHostName());
             var ips = host.AddressList

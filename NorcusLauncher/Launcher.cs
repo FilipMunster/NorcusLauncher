@@ -71,7 +71,18 @@ namespace NorcusLauncher
         public void RunClients() { _logger.Debug("Starting all clients"); ClientsAreRunning = true; Clients.ForEach(cli => cli.Run()); }
         public void RestartClients() { _logger.Debug("Restarting all clients"); Clients.ForEach(cli => cli.Restart()); }
         public void StopClients() { _logger.Debug("Stopping all clients"); ClientsAreRunning = false; Clients.ForEach(cli => cli.Stop()); }
-        public void IdentifyDisplays() { _logger.Debug("Identifying all displays"); Clients.ForEach(cli => cli.IdentifyDisplay()); }
+        public void IdentifyDisplays() 
+        {
+            _logger.Debug("Identifying all displays");
+            TimeSpan timeout = TimeSpan.FromMilliseconds(Config.IdentifierTimeout);
+            string ip = ClientProcess.GetLocalIPAddress();
+            foreach (var display in DisplayHandler.Displays)
+            {
+                var client = Clients.FirstOrDefault(cli => cli.Display == display);
+                if (client != null) client.IdentifyDisplay(timeout);
+                else display.Identify(timeout, "", ip);
+            }
+        }
 
         /// <summary>
         /// Přidá do kolekce displejů v Handleru displeje načtené z Configu. Zamezí duplicitním displejům.
