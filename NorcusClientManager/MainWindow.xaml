@@ -7,7 +7,9 @@
         xmlns:local="clr-namespace:NorcusClientManager"
         mc:Ignorable="d"
         Title="Norcus Client Manager" Height="430" Width="600"
-        Name="NCMWindow">
+        Name="NCMWindow"
+        Activated="Window_Activated"
+        Deactivated="Window_Deactivated">
     <Window.DataContext>
         <local:MainViewModel/>
     </Window.DataContext>

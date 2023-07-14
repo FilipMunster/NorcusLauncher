@@ -18,9 +18,14 @@ namespace NorcusLauncher.Clients
     {
         private static readonly NLog.Logger _logger = NLog.LogManager.GetCurrentClassLogger();
         [DllImport("user32.dll", EntryPoint = "SetWindowPos")]
-        private static extern IntPtr SetWindowPos(IntPtr hWnd, int hWndInsertAfter, int x, int Y, int cx, int cy, int wFlags);
+        private static extern IntPtr SetWindowPos(IntPtr hWnd, IntPtr hWndInsertAfter, int x, int Y, int cx, int cy, int wFlags);
+        [DllImport("user32.dll")]
+        private static extern bool SetForegroundWindow(IntPtr hWnd);
 
+        static readonly IntPtr HWND_TOPMOST = new IntPtr(-1);
+        static readonly IntPtr HWND_BOTTOM = new IntPtr(1);
         const int SWP_SHOWWINDOW = 0x0040;
+        const int SWP_NOACTIVATE = 0x0010;
         public ClientInfo ClientInfo { get; set; }
         public Process Process { get; private set; } = new Process();
         public Display? Display { get; set; }
@@ -103,7 +108,19 @@ namespace NorcusLauncher.Clients
         {
             if (Display is null || !IsRunning) return;
             _logger.Debug("Updating window position (client: {0}, new position: {1})", ClientInfo.Name, Display.WorkingArea);
-            SetWindowPos(Process.MainWindowHandle, 0, Display.WorkingArea.Left, Display.WorkingArea.Top, Display.WorkingArea.Width, Display.WorkingArea.Height, SWP_SHOWWINDOW);
+            SetWindowPos(Process.MainWindowHandle, new IntPtr(-1), Display.WorkingArea.Left, Display.WorkingArea.Top, Display.WorkingArea.Width, Display.WorkingArea.Height, SWP_SHOWWINDOW);
+        }
+        public void SetWindowTopMost()
+        {
+            if (Display is null || !IsRunning) return;
+            Rectangle windowPosition = Display.WorkingArea;
+            SetWindowPos(Process.MainWindowHandle, HWND_TOPMOST, windowPosition.Left, windowPosition.Top, windowPosition.Width, windowPosition.Height, SWP_SHOWWINDOW);
+        }
+        public void SetWindowToBottom()
+        {
+            if (Display is null || !IsRunning) return;
+            Rectangle windowPosition = Display.WorkingArea;
+            SetWindowPos(Process.MainWindowHandle, HWND_BOTTOM, windowPosition.Left, windowPosition.Top, windowPosition.Width, windowPosition.Height, SWP_NOACTIVATE);
         }
         private void _StartProcessOnPosition(Process process, Rectangle windowPosition)
         {
@@ -113,7 +130,8 @@ namespace NorcusLauncher.Clients
             {
                 Thread.Sleep(100);
             }
-            SetWindowPos(process.MainWindowHandle, 0, windowPosition.Left, windowPosition.Top, windowPosition.Width, windowPosition.Height, SWP_SHOWWINDOW);
+            SetWindowPos(process.MainWindowHandle, new IntPtr(-1), windowPosition.Left, windowPosition.Top, windowPosition.Width, windowPosition.Height, SWP_SHOWWINDOW);
+            SetForegroundWindow(process.MainWindowHandle);
         }
         public static string GetLocalIPAddress()
         {

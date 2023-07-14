@@ -40,7 +40,7 @@ namespace NorcusLauncher.Displays
         {
             (string vendor, DisplayID) = ParseDevicePath(display.DevicePath);
             _DisplayNameBase = _GetDisplayNameBase(vendor, display);
-            WorkingArea = display.DisplayScreen.WorkingArea;
+            WorkingArea = display.DisplayScreen.Bounds;
             IsConnected = true;
         }
         public void DisplayConnected(WindowsDisplayAPI.Display display)
@@ -50,7 +50,7 @@ namespace NorcusLauncher.Displays
             if (displayID != DisplayID)
                 throw new ArgumentException($"DisplayID se neshodují (původní: {DisplayID}, nové: {displayID})");
             _DisplayNameBase = _GetDisplayNameBase(vendor, display);
-            WorkingArea = display.DisplayScreen.WorkingArea;
+            WorkingArea = display.DisplayScreen.Bounds;
             IsConnected = true;
         }
         public void DisplayDisconnected()

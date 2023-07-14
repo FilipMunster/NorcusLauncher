@@ -49,7 +49,7 @@ namespace NorcusClientManager
         private ICommand _identifyClientsCommand;
         public ICommand IdentifyClientsCommand => _identifyClientsCommand ??= new RelayCommand<object>(
             (o) => _IdentifyClients(),
-            (o) => ClientViews.Count > 0);
+            (o) => true);
         private ICommand _apiServerStartCommand;
         public ICommand APIServerStartCommand => _apiServerStartCommand ??= new RelayCommand<object>(
             (o) => _APIServerStart(),
@@ -149,7 +149,14 @@ namespace NorcusClientManager
             _LoadConfig();
             _StartupActions();
         }
-
+        public void SetClientsTopMost()
+        {
+            _Launcher.Clients.ForEach(cli => cli.SetWindowTopMost());
+        }
+        public void SetClientsToBottom()
+        {
+            _Launcher.Clients.ForEach(cli => cli.SetWindowToBottom());
+        }
         private void _LoadConfig()
         {
             _StopClients();
