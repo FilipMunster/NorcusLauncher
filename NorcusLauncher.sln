@@ -5,8 +5,6 @@ VisualStudioVersion = 17.5.33530.505
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NorcusLauncher", "NorcusLauncher\NorcusLauncher.csproj", "{0F495FFC-1032-4878-8B06-2BE26DD08323}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Tester", "Tester\Tester.csproj", "{2A3E85F0-F69F-481B-ACEB-0005433CD923}"
-EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NorcusClientManager", "NorcusClientManager\NorcusClientManager.csproj", "{D00485DE-5C61-4B74-BEB1-B98B9F219E0E}"
 EndProject
 Global
@@ -19,10 +17,6 @@ Global
 		{0F495FFC-1032-4878-8B06-2BE26DD08323}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{0F495FFC-1032-4878-8B06-2BE26DD08323}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{0F495FFC-1032-4878-8B06-2BE26DD08323}.Release|Any CPU.Build.0 = Release|Any CPU
-		{2A3E85F0-F69F-481B-ACEB-0005433CD923}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{2A3E85F0-F69F-481B-ACEB-0005433CD923}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{2A3E85F0-F69F-481B-ACEB-0005433CD923}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{2A3E85F0-F69F-481B-ACEB-0005433CD923}.Release|Any CPU.Build.0 = Release|Any CPU
 		{D00485DE-5C61-4B74-BEB1-B98B9F219E0E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{D00485DE-5C61-4B74-BEB1-B98B9F219E0E}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{D00485DE-5C61-4B74-BEB1-B98B9F219E0E}.Release|Any CPU.ActiveCfg = Release|Any CPU

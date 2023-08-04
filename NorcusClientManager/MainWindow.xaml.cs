@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
@@ -21,6 +22,7 @@ namespace NorcusClientManager
     /// </summary>
     public partial class MainWindow : Window
     {
+        public readonly string VERSION = _GetVersion();
         private TaskbarIcon _tbi;
         private MainViewModel _dataContext;
         private ICommand _tbiDblCLickCommand;
@@ -28,6 +30,7 @@ namespace NorcusClientManager
         public MainWindow()
         {
             InitializeComponent();
+            NCMWindow.Title = NCMWindow.Title + " " + VERSION;
             _tbi = (TaskbarIcon)FindResource("NCMNotifyIcon");
             _tbi.DoubleClickCommand = _TbiDblClickCommand;
             _tbi.LeftClickCommand = _TbiDblClickCommand;
@@ -35,6 +38,15 @@ namespace NorcusClientManager
             _dataContext = (MainViewModel)DataContext;
             _dataContext.DataGridChanged += MainWindow_DataGridChanged;
             if (((MainViewModel)DataContext).StartInTray) NCMWindow.Visibility = Visibility.Hidden;
+        }
+        private static string _GetVersion()
+        {
+            string version = Assembly.GetEntryAssembly()?.GetName()?.Version?.ToString() ?? "";
+            while (version.EndsWith('0') || version.EndsWith("."))
+            {
+                version = version.Substring(0, version.Length - 1);
+            }
+            return version;
         }
 
         private void MainWindow_DataGridChanged(object? sender, EventArgs e)

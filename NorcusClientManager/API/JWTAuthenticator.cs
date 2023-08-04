@@ -77,7 +77,8 @@ namespace NorcusClientManager.API
                 ValidateIssuer = false,
                 ValidateAudience = false,
                 IssuerSigningKey = _GetSymmetricSecurityKey(),
-                LifetimeValidator = _LifetimeValidator
+                LifetimeValidator = _LifetimeValidator,
+                ValidateLifetime = false
             };
         }
         private SecurityKey _GetSymmetricSecurityKey()
@@ -87,7 +88,6 @@ namespace NorcusClientManager.API
         }
         private bool _LifetimeValidator(DateTime? notBefore, DateTime? expires, SecurityToken securityToken, TokenValidationParameters validationParameters)
         {
-            return true;
             if (!validationParameters.ValidateLifetime) return true;
             DateTime now = DateTime.UtcNow;
             if (now > securityToken.ValidFrom && now < securityToken.ValidTo) return true;
