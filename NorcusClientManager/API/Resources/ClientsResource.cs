@@ -70,11 +70,11 @@ namespace NorcusClientManager.API.Resources
                 return;
             }
 
-            if (id.HasValue) _launcher.Clients[id.Value].Run();
-            else _launcher.RunClients();
-
             context.Response.StatusCode = HttpStatusCode.Ok;
             await context.Response.SendResponseAsync();
+
+            if (id.HasValue) _launcher.Clients[id.Value].Run();
+            else _launcher.RunClients();
         }
 
         [RestRoute("Post", "stop")]
@@ -95,11 +95,11 @@ namespace NorcusClientManager.API.Resources
                 return;
             }
 
-            if (id.HasValue) _launcher.Clients[id.Value].Stop();
-            else _launcher.StopClients();
-
             context.Response.StatusCode = HttpStatusCode.Ok;
             await context.Response.SendResponseAsync();
+
+            if (id.HasValue) _launcher.Clients[id.Value].Stop();
+            else _launcher.StopClients();
         }
 
         [RestRoute("Post", "restart")]
@@ -120,11 +120,11 @@ namespace NorcusClientManager.API.Resources
                 return;
             }
 
-            if (id.HasValue) _launcher.Clients[id.Value].Restart();
-            else _launcher.RestartClients();
-
             context.Response.StatusCode = HttpStatusCode.Ok;
             await context.Response.SendResponseAsync();
+
+            if (id.HasValue) _launcher.Clients[id.Value].Restart();
+            else _launcher.RestartClients();
         }
 
         [RestRoute("Post", "identify")]
@@ -145,11 +145,11 @@ namespace NorcusClientManager.API.Resources
                 return;
             }
 
-            if (id.HasValue) _launcher.Clients[id.Value].IdentifyDisplay();
-            else _launcher.IdentifyDisplays();
-
             context.Response.StatusCode = HttpStatusCode.Ok;
             await context.Response.SendResponseAsync();
+
+            if (id.HasValue) _launcher.Clients[id.Value].IdentifyDisplay();
+            else _launcher.IdentifyDisplays();
         }
     }
 }
