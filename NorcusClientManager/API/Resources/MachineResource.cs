@@ -29,7 +29,7 @@ namespace NorcusClientManager.API.Resources
         [RestRoute("Post", "shutdown")]
         public async Task Shutdown(IHttpContext context)
         {
-            if (!_authenticator.ValidateFromContext(context, new Claim("CanControlMachine", "true")))
+            if (!_authenticator.ValidateFromContext(context, new Claim("NcmAdmin", "true")))
             {
                 await context.Response.SendResponseAsync(HttpStatusCode.Forbidden);
                 return;
@@ -44,7 +44,7 @@ namespace NorcusClientManager.API.Resources
         [RestRoute("Post", "restart")]
         public async Task Restart(IHttpContext context)
         {
-            if (!_authenticator.ValidateFromContext(context, new Claim("CanControlMachine", "true")))
+            if (!_authenticator.ValidateFromContext(context, new Claim("NcmAdmin", "true")))
             {
                 await context.Response.SendResponseAsync(HttpStatusCode.Forbidden);
                 return;

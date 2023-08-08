@@ -56,7 +56,7 @@ namespace NorcusClientManager.API.Resources
         [RestRoute("Post", "{id:num}/run")]
         public async Task RunClients(IHttpContext context)
         {
-            if (!_authenticator.ValidateFromContext(context, new Claim("CanControlClients", "true")))
+            if (!_authenticator.ValidateFromContext(context, new Claim("NcmAdmin", "true")))
             {
                 await context.Response.SendResponseAsync(HttpStatusCode.Forbidden);
                 return;
@@ -81,7 +81,7 @@ namespace NorcusClientManager.API.Resources
         [RestRoute("Post", "{id:num}/stop")]
         public async Task StopClients(IHttpContext context)
         {
-            if (!_authenticator.ValidateFromContext(context, new Claim("CanControlClients", "true")))
+            if (!_authenticator.ValidateFromContext(context, new Claim("NcmAdmin", "true")))
             {
                 await context.Response.SendResponseAsync(HttpStatusCode.Forbidden);
                 return;
@@ -106,7 +106,7 @@ namespace NorcusClientManager.API.Resources
         [RestRoute("Post", "{id:num}/restart")]
         public async Task RestartClients(IHttpContext context)
         {
-            if (!_authenticator.ValidateFromContext(context, new Claim("CanControlClients", "true")))
+            if (!_authenticator.ValidateFromContext(context, new Claim("NcmAdmin", "true")))
             {
                 await context.Response.SendResponseAsync(HttpStatusCode.Forbidden);
                 return;
@@ -131,7 +131,7 @@ namespace NorcusClientManager.API.Resources
         [RestRoute("Post", "{id:num}/identify")]
         public async Task IdentifyClients(IHttpContext context)
         {
-            if (!_authenticator.ValidateFromContext(context, new Claim("CanControlClients", "true")))
+            if (!_authenticator.ValidateFromContext(context, new Claim("NcmAdmin", "true")))
             {
                 await context.Response.SendResponseAsync(HttpStatusCode.Forbidden);
                 return;
