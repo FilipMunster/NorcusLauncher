@@ -235,7 +235,15 @@ namespace NorcusClientManager
         {
             _APIServer?.Stop();
             _APIServer = new API.Server(_Launcher, APIPort, APIKey);
-            _APIServer.Start();
+            try
+            {
+                _APIServer.Start();
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message, "Chyba při spouštění API serveru", MessageBoxButton.OK, MessageBoxImage.Error);
+                throw;
+            }
             _APIServerIsRunning = true;
         }
         private void _APIServerStop()
