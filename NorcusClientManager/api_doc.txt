@@ -1,0 +1,67 @@
+Norcus Client Manager API
+=========================
+JWT token:
+----------
+Claims:
+	- "NcmAdmin": "true"/"false"
+	
+Routes:
+-------
+GET: api/v1/clients
+	-> IClient[]
+	- vrátí všechny klienty
+	- Požadavky: Validní token
+
+GET: api/v1/clients/{id:num}
+	-> IClient
+	- vrátí jednoho klienta dle {id:num}
+	- Požadavky: Validní token
+	
+POST: api/v1/clients/run
+	- spustí všechny klienty
+	- Požadavky: NcmAdmin == "true"
+	
+POST: api/v1/clients/{id:num}/run
+	- spustí jednoho klienta dle {id:num}
+	- Požadavky: NcmAdmin == "true"
+
+POST: api/v1/clients/stop
+	- zastaví všechny klienty
+	- Požadavky: NcmAdmin == "true"
+	
+POST: api/v1/clients/{id:num}/stop
+	- zastaví jednoho klienta dle {id:num}
+	- Požadavky: NcmAdmin == "true"
+
+POST: api/v1/clients/restart
+	- restartuje všechny klienty
+	- Požadavky: NcmAdmin == "true"
+	
+POST: api/v1/clients/{id:num}/restart
+	- restartuje jednoho klienta dle {id:num}
+	- Požadavky: NcmAdmin == "true"
+	
+POST: api/v1/clients/identify
+	- identifikuje všechny klienty
+	- Požadavky: NcmAdmin == "true"
+	
+POST: api/v1/clients/{id:num}/identify
+	- identifikuje jednoho klienta dle {id:num}
+	- Požadavky: NcmAdmin == "true"
+	
+POST: api/v1/machine/shutdown
+	- vypne počítač
+	- Požadavky: NcmAdmin == "true"
+	
+POST: api/v1/machine/restart
+	- restartuje počítač
+	- Požadavky: NcmAdmin == "true"
+
+Interfaces:
+-----------	
+IClient {
+	Id: int
+	Name: string
+	Display: string
+	IsRunning: bool
+}
