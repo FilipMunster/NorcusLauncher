@@ -17,6 +17,7 @@ namespace NorcusLauncher
             try { Process.GetProcessById(process.Id); }
             catch (InvalidOperationException) { return false; }
             catch (ArgumentException) { return false; }
+            if (process.HasExited) { return false; }
             return true;
         }
         public static IEnumerable<Process> GetChildProcesses(this Process process)

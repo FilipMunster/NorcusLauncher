@@ -39,6 +39,8 @@ namespace NorcusLauncher.Clients
         public void Run()
         {
             if (Display is null || !Display.IsConnected || this.IsRunning) return;
+            Process.Close();
+
             _logger.Debug("Starting client {0}", ClientInfo.Name);
             string startMode;
             switch (ClientInfo.StartMode)
