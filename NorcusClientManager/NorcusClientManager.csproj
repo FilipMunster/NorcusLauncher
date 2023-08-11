@@ -21,13 +21,6 @@
     <None Remove="Icons\Run.png" />
     <None Remove="Icons\Save.png" />
     <None Remove="Icons\Stop.png" />
-    <None Remove="version" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Compile Include="version">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Compile>
   </ItemGroup>
 
   <ItemGroup>
@@ -61,6 +54,9 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
     <None Update="NLog.config">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="version">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
   </ItemGroup>
