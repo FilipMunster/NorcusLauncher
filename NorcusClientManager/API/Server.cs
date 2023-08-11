@@ -28,10 +28,18 @@ namespace NorcusClientManager.API
             _server = serverBuilder.Build();
             _server.Prefixes.Clear();
             _server.Prefixes.Add($"https://+:{port}/");
+            //_server.Prefixes.Add($"http://localhost:{port}/");
             _server.AutoParseFormUrlEncodedData();
             _server.Router.Options.SendExceptionMessages = true;
+            _server.Router.BeforeRoutingAsync.Add(_BeforeRouting);
         }
         public void Start() => _server.Start();
         public void Stop() => _server.Stop();
+
+        private Task _BeforeRouting(IHttpContext context)
+        {
+            context.Response.AddHeader("Access-Control-Allow-Origin", "*");
+            return Task.CompletedTask;
+        }
     }
 }
