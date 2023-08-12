@@ -4,6 +4,7 @@ using System.ComponentModel;
 using System.Data;
 using System.Drawing;
 using System.Linq;
+using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
@@ -13,11 +14,14 @@ namespace NorcusLauncher.Displays
 {
     public partial class IdentifierForm : Form
     {
+        [DllImport("user32.dll")]
+        private static extern bool SetForegroundWindow(IntPtr hWnd);
         private Display _Display { get; set; }
         private TimeSpan _TimeOut { get; set; }
         public IdentifierForm(TimeSpan timeOut, Display display, string additionalText = "", string footer = "")
         {
             InitializeComponent();
+            HandleCreated += IdentifierForm_HandleCreated;
             ShowInTaskbar = false;
 
             DispId.Text = display.Index.ToString();
@@ -32,6 +36,7 @@ namespace NorcusLauncher.Displays
             _Display = display;
             _TimeOut = timeOut;
         }
+
         protected override void OnShown(EventArgs e)
         {
             base.OnShown(e);
@@ -44,6 +49,10 @@ namespace NorcusLauncher.Displays
             Timer timer = new Timer() { Interval = (int)_TimeOut.TotalMilliseconds };
             timer.Tick += (_, _) => Close();
             timer.Start();
+        }
+        private void IdentifierForm_HandleCreated(object? sender, EventArgs e)
+        {
+            SetForegroundWindow(this.Handle);
         }
 
         private void IdentifierForm_Load(object sender, EventArgs e)
